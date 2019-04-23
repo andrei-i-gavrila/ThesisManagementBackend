@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\Authenticate;
+use App\Models\AuthToken;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Response::macro('withAuthToken', function (AuthToken $authToken, string $message = '') {
+            return Response::json(compact('message'), 200, [
+                Authenticate::TOKEN_FIELD => $authToken->token
+            ]);
+        });
     }
 }
