@@ -5,6 +5,7 @@ namespace App\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -15,6 +16,14 @@ use Illuminate\Support\Str;
  * @method static Builder|AuthToken newQuery()
  * @method static Builder|AuthToken query()
  * @mixin Eloquent
+ * @property string $token
+ * @property int $user_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|AuthToken whereCreatedAt($value)
+ * @method static Builder|AuthToken whereToken($value)
+ * @method static Builder|AuthToken whereUpdatedAt($value)
+ * @method static Builder|AuthToken whereUserId($value)
  */
 class AuthToken extends Model
 {
