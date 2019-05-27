@@ -165,6 +165,8 @@ return [
         /*
          * Package Services Providers...
          */
+        Spatie\Permission\PermissionServiceProvider::class,
+
 
         /*
          * Application Services Providers...
@@ -174,7 +176,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
     ],
 
     /*

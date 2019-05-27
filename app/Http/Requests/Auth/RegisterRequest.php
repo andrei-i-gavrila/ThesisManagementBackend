@@ -4,7 +4,17 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
+
+/**
+ * Class RegisterRequest
+ * @package App\Http\Requests\Auth
+ *
+ * @property-read string $name
+ * @property-read string $email
+ * @property-read string $password
+ */
 class RegisterRequest extends FormRequest
 {
     /**
@@ -26,7 +36,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email|regex:/@.+\.ubbcluj.ro$/',
+            'email' => 'required|exists:users,email,activated,0',
             'password' => 'required|confirmed'
         ];
     }

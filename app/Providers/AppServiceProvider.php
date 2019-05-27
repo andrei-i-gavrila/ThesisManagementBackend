@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Response::macro('withAuthToken', function (AuthToken $authToken, string $message = '') {
+        Response::macro('withAuthToken', function (AuthToken $authToken, string $message = NULL) {
             return Response::json(compact('message'), 200, [
                 Authenticate::TOKEN_FIELD => $authToken->token
             ]);
