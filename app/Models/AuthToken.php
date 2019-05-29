@@ -27,7 +27,11 @@ use Illuminate\Support\Str;
  */
 class AuthToken extends Model
 {
-    protected $fillable = ["token", "user_id"];
+//    protected $fillable = ["token", "user_id"];
+    protected $guarded = [];
+    protected $primaryKey = 'token';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     /**
      * @return string
@@ -45,9 +49,8 @@ class AuthToken extends Model
 
     public function refreshToken()
     {
-        $this->update([
-            'token' => self::generateRandomToken()
-        ]);
+        $this->token = self::generateRandomToken();
+        $this->save();
         return $this;
     }
 

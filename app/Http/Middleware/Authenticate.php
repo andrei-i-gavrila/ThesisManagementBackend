@@ -33,10 +33,9 @@ class Authenticate
      * @param string $tokenValue
      * @return AuthToken
      */
-    public function getAuthToken($tokenValue)
+    private function getAuthToken($tokenValue)
     {
-        $authToken = AuthToken::with('user')->whereToken($tokenValue)->first();
-        return $authToken;
+        return AuthToken::with('user')->find($tokenValue);
     }
 
     /**
@@ -44,12 +43,12 @@ class Authenticate
      * @return string
      * @throws AuthenticationException
      */
-    public function getTokenOrFail(Request $request): string
+    private function getTokenOrFail(Request $request): string
     {
-        if (!$request->hasHeader('Authorization')) {
+        if (!$request->hasHeader(self::TOKEN_FIELD)) {
             throw new AuthenticationException();
         }
-        return $request->header('Authorization');
+        return $request->header(self::TOKEN_FIELD);
     }
 
     /**
@@ -58,14 +57,14 @@ class Authenticate
      * @param AuthToken $token
      * @return mixed
      */
-    public function continueRequestWithLoggedUser(Request $request, $next, AuthToken $token)
+    private function continueRequestWithLoggedUser(Request $request, $next, AuthToken $token)
     {
         Auth::setUser($token->user);
-
         $response = $next($request);
 
-        $response->header('Authorization', $token->refreshToken()->token);
-
+        if (Auth::check()) {
+            $response->header(self::TOKEN_FIELD, $token->refreshToken()->token);
+        }
         return $response;
     }
 

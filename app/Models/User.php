@@ -50,4 +50,10 @@ class User extends Authenticatable
     protected $fillable = ['email', 'name'];
 
     protected $hidden = ['password'];
+
+    public function getNameAttribute($name)
+    {
+        return $name ?? $this->email;
+    }
+
 }

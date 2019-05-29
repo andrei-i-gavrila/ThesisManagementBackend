@@ -21,7 +21,7 @@ class LoginController extends Controller
     {
         $user = User::whereEmail($request->input('email'))->whereActivated(1)->first();
         if (!$user or !Hash::check($request->input('password'), $user->password)) {
-            throw new AuthorizationException();
+            throw new AuthorizationException("Invalid credentials. Try again!");
         }
         Auth::setUser($user);
         return response()->withAuthToken(AuthToken::createForUser($user), "Successful login");

@@ -28,14 +28,14 @@ class AdminController extends Controller
             'email' => $request->email,
         ]);
 
-        $user->assignRole(Roles::COORDINATOR);
+        $user->assignRole(Roles::TEACHER);
 
-        return response();
+        return response()->json();
     }
 
     public function allCoordinators()
     {
-        return User::role(Roles::COORDINATOR)->get();
+        return User::role(Roles::TEACHER)->get();
     }
 
     /**

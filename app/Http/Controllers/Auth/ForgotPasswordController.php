@@ -41,6 +41,6 @@ class ForgotPasswordController extends Controller
 
         Mail::to($resetToken->email)->send(new ResetPasswordMail($resetToken));
 
-        return response();
+        return response()->json();
     }
 }
