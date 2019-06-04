@@ -3,6 +3,7 @@
 use App\Enums\Roles;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class TestDataSeeder extends Seeder
 {
@@ -18,6 +19,6 @@ class TestDataSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make("admin"),
             'activated' => 1,
-        ])->assignRole(Roles::SUPER_ADMIN);
+        ])->assignRole(Role::findOrCreate(Roles::SUPER_ADMIN));
     }
 }

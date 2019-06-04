@@ -27,11 +27,18 @@ use Illuminate\Support\Str;
  */
 class AuthToken extends Model
 {
-//    protected $fillable = ["token", "user_id"];
-    protected $guarded = [];
-    protected $primaryKey = 'token';
     public $incrementing = false;
+    protected $fillable = ["token", "user_id"];
+    protected $primaryKey = 'token';
     protected $keyType = 'string';
+
+    public static function createForUser($user)
+    {
+        return static::create([
+            'user_id' => $user->id,
+            'token' => self::generateRandomToken()
+        ]);
+    }
 
     /**
      * @return string
@@ -40,7 +47,6 @@ class AuthToken extends Model
     {
         return Str::random(32);
     }
-
 
     public function user()
     {
@@ -52,14 +58,6 @@ class AuthToken extends Model
         $this->token = self::generateRandomToken();
         $this->save();
         return $this;
-    }
-
-    public static function createForUser($user)
-    {
-        return static::create([
-            'user_id' => $user->id,
-            'token' => self::generateRandomToken()
-        ]);
     }
 
 }

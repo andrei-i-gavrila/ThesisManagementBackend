@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -39,11 +43,14 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $verified
  * @method static Builder|User whereActivated($value)
  * @method static Builder|User whereVerified($value)
+ * @property-read Collection|Permission[] $permissions
+ * @property-read Collection|Role[] $roles
+ * @method static Builder|User permission($permissions)
+ * @method static Builder|User role($roles, $guard = null)
  */
 class User extends Authenticatable
 {
-    use Notifiable;
-    use HasRoles;
+    use Notifiable, HasRoles;
 
     protected $guard_name = 'api';
 
@@ -56,4 +63,18 @@ class User extends Authenticatable
         return $name ?? $this->email;
     }
 
+    public function getIsEvaluatorAttribute()
+    {
+        return $this->hasRole(Roles::EVALUATOR);
+    }
+
+    public function getIsCoordinatorAttribute()
+    {
+        return $this->hasRole(Roles::COORDINATOR);
+    }
+
+    public function professorDetails()
+    {
+        return $this->hasOne(ProfessorDetails::class, 'professor_id');
+    }
 }

@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Http\Middleware\Authenticate;
 use App\Models\AuthToken;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
                 Authenticate::TOKEN_FIELD => $authToken->token
             ]);
         });
+
+        DB::listen(function(QueryExecuted $query) {
+            Log::info($query->sql);
+        });
+
     }
 }

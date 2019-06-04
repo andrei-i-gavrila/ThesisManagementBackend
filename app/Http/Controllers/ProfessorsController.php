@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
+use App\Jobs\ProfessorDetailImporter;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ProfessorsController extends Controller
 {
@@ -20,14 +22,38 @@ class ProfessorsController extends Controller
     {
         $this->validate($request, ['email' => 'required|email']);
 
-        User::create(['email' => $request->email])->assignRole(Roles::PROFESSOR);
+        $professor = User::firstOrNew(['email' => $request->email])->assignRole(Roles::PROFESSOR);
+        $professor->save();
+
+        dispatch_now(new ProfessorDetailImporter($professor));
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     * @throws AuthorizationException
+     */
+    public function get(User $user)
+    {
+        $this->checkIsProfessor($user);
+        return $user->load('professorDetails')->append(['isEvaluator', 'isCoordinator']);
+    }
+
+    /**
+     * @param User $user
+     * @throws AuthorizationException
+     */
+    private function checkIsProfessor(User $user): void
+    {
+        if (!$user->hasRole(Roles::PROFESSOR)) {
+            throw new AccessDeniedHttpException("Cannot perform operation on a non professor");
+        }
     }
 
     public function getAll()
     {
-        return User::role(Roles::PROFESSOR)->get();
+        return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email']);
     }
-
 
     /**
      * @param User $user
@@ -40,17 +66,6 @@ class ProfessorsController extends Controller
         $this->checkIsProfessor($user);
 
         $user->delete();
-    }
-
-    /**
-     * @param User $user
-     * @throws AuthorizationException
-     */
-    private function checkIsProfessor(User $user): void
-    {
-        if (!$user->hasRole(Roles::PROFESSOR)) {
-            throw new AuthorizationException("Cannot perform operation on a non professor");
-        }
     }
 
     /**
