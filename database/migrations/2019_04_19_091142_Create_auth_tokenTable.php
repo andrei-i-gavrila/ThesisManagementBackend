@@ -16,8 +16,9 @@ class CreateAuthTokenTable extends Migration
         Schema::create("auth_tokens", function (Blueprint $table) {
             $table->string("token")->unique();
             $table->bigInteger("user_id");
-            $table->timestamps();
+            $table->dateTime("expiration_time")->nullable();
 
+            $table->timestamps();
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
         });
     }

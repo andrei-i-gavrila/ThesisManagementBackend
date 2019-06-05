@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\Roles;
+use App\Traits\UserProfessor;
+use App\Traits\UserStudent;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -47,15 +48,18 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read Collection|Role[] $roles
  * @method static Builder|User permission($permissions)
  * @method static Builder|User role($roles, $guard = null)
+ * @property-read bool $is_coordinator
+ * @property-read bool $is_evaluator
+ * @property-read ProfessorDetails $professorDetails
+ * @property-read Collection|User[] $students
  */
 class User extends Authenticatable
 {
     use Notifiable, HasRoles;
-
+    use UserProfessor;
+    use UserStudent;
     protected $guard_name = 'api';
-
     protected $fillable = ['email', 'name'];
-
     protected $hidden = ['password'];
 
     public function getNameAttribute($name)
@@ -63,18 +67,5 @@ class User extends Authenticatable
         return $name ?? $this->email;
     }
 
-    public function getIsEvaluatorAttribute()
-    {
-        return $this->hasRole(Roles::EVALUATOR);
-    }
 
-    public function getIsCoordinatorAttribute()
-    {
-        return $this->hasRole(Roles::COORDINATOR);
-    }
-
-    public function professorDetails()
-    {
-        return $this->hasOne(ProfessorDetails::class, 'professor_id');
-    }
 }

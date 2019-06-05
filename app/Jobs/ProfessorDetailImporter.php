@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProfessorDetailImporter implements ShouldQueue
 {
@@ -18,28 +19,18 @@ class ProfessorDetailImporter implements ShouldQueue
      */
     private $professor;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param User $professor
-     */
     public function __construct(User $professor)
     {
-        //
         $this->professor = $professor;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         $pageData = file_get_contents("http://www.cs.ubbcluj.ro/about-the-faculty/departments/department-of-computer-science/");
         $emailRegex = str_replace(['@', '.'], ['\\[at\\]', '\\.'], $this->professor->email);
+        $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?interest:\s(.*?)</m';
 
-        $re = '/src=\'(.*?)\'.*\n(?:.*\n){2}.*?' . $emailRegex . '(?:.*\n){3}.*?:\s(.*?)</m';
+        Log::info($re);
 
         preg_match($re, $pageData, $matches);
 
@@ -47,10 +38,11 @@ class ProfessorDetailImporter implements ShouldQueue
             return;
         }
 
-        $image_url = $matches[1];
-        $interest_domains = $matches[2];
-        $professor_id = $this->professor->id;
-
-        ProfessorDetails::create(compact('image_url', 'interest_domains', 'professor_id'));
+        ProfessorDetails::updateOrCreate([
+            'professor_id' => $this->professor->id
+        ], [
+            'image_url' => $matches[1],
+            'interest_domains' => $matches[2]
+        ]);
     }
 }

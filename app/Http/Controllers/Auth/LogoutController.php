@@ -21,15 +21,7 @@ class LogoutController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $fromAll = boolval($request->input("fromAll", false));
-        if($fromAll) {
-            AuthToken::whereUserId(Auth::id())->delete();
-            Auth::setUser(null);
-            return response()->json();
-        }
-
-        $token = $request->headers->get(Authenticate::TOKEN_FIELD);
-        AuthToken::find($token)->delete();
+        Auth::logout();
         return response()->json();
     }
 }

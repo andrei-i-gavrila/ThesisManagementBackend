@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Auth\TokenGuard;
 use App\Http\Middleware\Authenticate;
 use App\Models\AuthToken;
 use Illuminate\Database\Events\QueryExecuted;
@@ -31,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Response::macro('withAuthToken', function (AuthToken $authToken, string $message = NULL) {
             return Response::json(compact('message'), 200, [
-                Authenticate::TOKEN_FIELD => $authToken->token
+                TokenGuard::TOKEN_FIELD => $authToken->token
             ]);
         });
 

@@ -23,7 +23,7 @@ class LoginController extends Controller
         if (!$user or !Hash::check($request->input('password'), $user->password)) {
             throw new AuthorizationException("Invalid credentials. Try again!");
         }
-        Auth::setUser($user);
-        return response()->withAuthToken(AuthToken::createForUser($user), "Successful login");
+        $expirationTime = $request->input('remember_me', false) ? now()->addWeek() : null;
+        return response()->withAuthToken(AuthToken::createForUser($user, $expirationTime), "Successful login");
     }
 }

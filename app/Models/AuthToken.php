@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,8 @@ use Illuminate\Support\Str;
  * @method static Builder|AuthToken whereToken($value)
  * @method static Builder|AuthToken whereUpdatedAt($value)
  * @method static Builder|AuthToken whereUserId($value)
+ * @property Carbon $expiration_time
+ * @method static Builder|AuthToken whereExpirationTime($value)
  */
 class AuthToken extends Model
 {
@@ -32,11 +35,17 @@ class AuthToken extends Model
     protected $primaryKey = 'token';
     protected $keyType = 'string';
 
-    public static function createForUser($user)
+    protected $dates = [
+        'expiration_time',
+    ];
+
+
+    public static function createForUser($user, $expirationTime)
     {
         return static::create([
             'user_id' => $user->id,
-            'token' => self::generateRandomToken()
+            'token' => self::generateRandomToken(),
+            'expiration_time' => $expirationTime
         ]);
     }
 
@@ -58,6 +67,11 @@ class AuthToken extends Model
         $this->token = self::generateRandomToken();
         $this->save();
         return $this;
+    }
+
+    public function expired()
+    {
+        return $this->expiration_time != null ? $this->expiration_time->isPast() : false;
     }
 
 }

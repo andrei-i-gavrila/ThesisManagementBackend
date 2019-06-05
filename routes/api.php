@@ -10,7 +10,7 @@ Route::namespace("Auth")->prefix("auth")->group(function () {
 });
 
 
-Route::middleware(["auth:api"])->group(function () {
+Route::middleware(["auth"])->group(function () {
     Route::namespace("User")->prefix("user")->group(function () {
         Route::get("me", "UserController@loggedUser");
     });
@@ -28,9 +28,14 @@ Route::middleware(["auth:api"])->group(function () {
         Route::get("{user}", "ProfessorsController@get");
         Route::post("{user}/toggle/coordinator", "ProfessorsController@toggleCoordinator");
         Route::post("{user}/toggle/evaluator", "ProfessorsController@toggleEvaluator");
+        Route::post("{user}/reimport", "ProfessorsController@reimportDetails");
     });
-});
 
-Route::get('/', function () {
-    dispatch_now(new ProfessorDetailImporter('mircea@cs.ubbcluj.ro'));
+    Route::prefix("students")->group(function () {
+        Route::post("/", "StudentsController@create");
+        Route::get("/all", "StudentsController@getAll");
+        Route::get("/", "StudentsController@getMyStudents");
+        Route::delete("{user}", "StudentsController@delete");
+        Route::get("{user}", "StudentsController@get");
+    });
 });

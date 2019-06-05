@@ -27,7 +27,6 @@ class RegisterController extends Controller
             'activated' => 1
         ]);
 
-        Auth::setUser($user);
-        return response()->withAuthToken(AuthToken::createForUser($user), "Successful register");
+        return response()->withAuthToken(AuthToken::createForUser($user, now()->addWeek()), "Successful register");
     }
 }

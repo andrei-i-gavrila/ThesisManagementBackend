@@ -50,6 +50,16 @@ class ProfessorsController extends Controller
         }
     }
 
+    /**
+     * @param User $user
+     * @throws AuthorizationException
+     */
+    public function reimportDetails(User $user)
+    {
+        $this->checkIsProfessor($user);
+        dispatch_now(new ProfessorDetailImporter($user));
+    }
+
     public function getAll()
     {
         return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email']);

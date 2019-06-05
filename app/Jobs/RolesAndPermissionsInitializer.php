@@ -20,7 +20,8 @@ class RolesAndPermissionsInitializer implements ShouldQueue
     private $roles = [
         Roles::ADMIN => [
             Permissions::MANAGE_PROFESSORS,
-            Permissions::MANAGE_SESSIONS
+            Permissions::MANAGE_SESSIONS,
+            Permissions::MANAGE_GRADING_SCHEMES
         ],
         Roles::PROFESSOR => [],
         Roles::COORDINATOR => [
@@ -29,7 +30,8 @@ class RolesAndPermissionsInitializer implements ShouldQueue
         ],
         Roles::EVALUATOR => [
             Permissions::MANAGE_KEYWORDS,
-            Permissions::SEE_STUDENTS
+            Permissions::SEE_STUDENTS,
+            Permissions::GRADE,
         ],
         Roles::STUDENT => [
             Permissions::MANAGE_THESIS_PAPERS,
