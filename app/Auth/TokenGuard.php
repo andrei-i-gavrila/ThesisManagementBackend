@@ -60,6 +60,10 @@ class TokenGuard implements Guard
         $tokenString = $this->request->header(self::TOKEN_FIELD);
 
         if (!$tokenString) {
+            $tokenString = $this->request->input(self::TOKEN_FIELD);
+        }
+
+        if (!$tokenString) {
             return null;
         }
 
