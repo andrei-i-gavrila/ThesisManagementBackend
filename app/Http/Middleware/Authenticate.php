@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 
-use App\Auth\TokenGuard;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,12 +22,7 @@ class Authenticate
             throw new AuthenticationException();
         }
 
-        $response = $next($request);
-
-        if (Auth::check()) {
-            $response->header(TokenGuard::TOKEN_FIELD, Auth::authToken()->token);
-        }
-        return $response;
+        return $next($request);
     }
 
 }

@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\RolesAndPermissionsInitializer;
 use App\Models\ExamSession;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class ExamSessionController extends Controller
 {
     public function index()
     {
         return ExamSession::query()->latest()->get();
+    }
+
+    public function get(ExamSession $examSession)
+    {
+        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories']);
     }
 
     /**

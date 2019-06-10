@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -20,14 +22,16 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ExamSession whereId($value)
  * @method static Builder|ExamSession whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read Collection|GradingCategory[] $gradingCategories
  */
 class ExamSession extends Model
 {
-    protected $keyType = 'string';
     public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = ['id'];
 
-    public function createPermissions() {
-
+    public function gradingCategories(): HasMany
+    {
+        return $this->hasMany(GradingCategory::class)->whereNull('parent_category_id')->orderBy('order');
     }
 }

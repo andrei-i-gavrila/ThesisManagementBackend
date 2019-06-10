@@ -97,6 +97,7 @@ class TokenGuard implements Guard
         } else {
             $this->authToken->delete();
         }
+        $this->request->headers->remove(self::TOKEN_FIELD);
         $this->setUser(null);
         $this->setAuthToken(null);
     }

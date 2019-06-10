@@ -7,7 +7,6 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\AuthToken;
 use App\Models\User;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller

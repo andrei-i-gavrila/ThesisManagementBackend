@@ -1,6 +1,5 @@
 <?php
 
-use App\Jobs\ProfessorDetailImporter;
 use Illuminate\Support\Facades\Route;
 
 Route::namespace("Auth")->prefix("auth")->group(function () {
@@ -15,10 +14,21 @@ Route::middleware(["auth"])->group(function () {
         Route::get("me", "UserController@loggedUser");
     });
 
-    Route::prefix('sessions')->group(function () {
-        Route::get('/', "ExamSessionController@index");
-        Route::post('/', "ExamSessionController@create");
-        Route::delete('/{examSession}', "ExamSessionController@delete");
+    Route::prefix("sessions")->group(function () {
+        Route::get("/", "ExamSessionController@index");
+        Route::post("/", "ExamSessionController@create");
+        Route::delete("/{examSession}", "ExamSessionController@delete");
+
+        Route::get("/{examSession}/gradingCategory", "GradingCategoryController@getCategories");
+        Route::post("/{examSession}/gradingCategory", "GradingCategoryController@saveCategory");
+    });
+
+
+    Route::prefix("gradingCategory/{gradingCategory}")->group(function () {
+        Route::delete("", "GradingCategoryController@deleteCategory");
+        Route::post("", "GradingCategoryController@updateCategory");
+        Route::post("/increment", "GradingCategoryController@incrementOrder");
+        Route::post("/decrement", "GradingCategoryController@decrementOrder");
     });
 
     Route::prefix("professors")->group(function () {
