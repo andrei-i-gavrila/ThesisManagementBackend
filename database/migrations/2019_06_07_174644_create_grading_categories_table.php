@@ -16,7 +16,7 @@ class CreateGradingCategoriesTable extends Migration
         Schema::create('grading_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->float('points');
             $table->integer('order');
             $table->bigInteger('parent_category_id')->nullable();

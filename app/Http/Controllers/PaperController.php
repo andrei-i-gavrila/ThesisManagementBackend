@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paper;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,20 +25,25 @@ class PaperController extends Controller
         ]);
 
         $studentEmail = Auth::user()->email;
-        $paperName = $request->name;
-        $date = now()->format('Y-m-d');
+        $paperName = $request->name ;
+        $date = now()->format('Y-m-d-His');
 
-        $filepath = Storage::putFileAs("papers/$studentEmail", $request->file('paper'), "$date-$paperName");
+        $filepath = Storage::putFileAs("papers/$studentEmail", $request->file('paper' ), "$date-$paperName" . '.' . $request->file('paper')->extension());
 
-        Paper::create([
+        $paper = Paper::create([
             'filepath' => $filepath,
             'name' => $paperName,
+            'student_id' => Auth::id()
         ]);
+
+        if (!$paper) {
+            Storage::delete($filepath);
+        }
     }
 
     public function download(Paper $paper)
     {
-        return Storage::response($paper->filepath);
+        return Storage::download($paper->filepath);
     }
 
     public function getMine()
@@ -49,7 +55,7 @@ class PaperController extends Controller
      * @param User|Authenticatable $user
      * @return mixed
      */
-    public function get(User $user)
+    public function get($user)
     {
         return $user->papers;
     }

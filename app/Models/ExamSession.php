@@ -23,12 +23,17 @@ use Illuminate\Support\Carbon;
  * @method static Builder|ExamSession whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read Collection|GradingCategory[] $gradingCategories
+ * @property string $name
+ * @method static Builder|ExamSession whereName($value)
  */
 class ExamSession extends Model
 {
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $fillable = ['id'];
+    protected $fillable = ['name'];
+
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
 
     public function gradingCategories(): HasMany
     {

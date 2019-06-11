@@ -48,4 +48,19 @@ Route::middleware(["auth"])->group(function () {
         Route::delete("{user}", "StudentsController@delete");
         Route::get("{user}", "StudentsController@get");
     });
+
+    Route::prefix("papers")->group(function () {
+        Route::get("/mine", "PaperController@getMine");
+        Route::post("/", "PaperController@create");
+        Route::get("/{paper}/download", "PaperController@download");
+        Route::get("/user/{user}", "PaperController@get");
+
+        Route::post('{paper}/messages', "CommentController@create");
+        Route::get('{paper}/messages', "CommentController@getForPaper");
+    });
+
+    Route::prefix('comments')->group(function() {
+        Route::post("{comment}", "CommentController@update");
+        Route::delete("{comment}", "CommentController@delete");
+    });
 });

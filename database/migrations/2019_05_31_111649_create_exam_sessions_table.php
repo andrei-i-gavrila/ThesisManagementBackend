@@ -14,7 +14,8 @@ class CreateExamSessionsTable extends Migration
     public function up()
     {
         Schema::create('exam_sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->bigIncrements('id');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }

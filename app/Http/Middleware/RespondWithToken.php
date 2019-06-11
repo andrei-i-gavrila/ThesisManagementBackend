@@ -21,7 +21,7 @@ class RespondWithToken
         $response = $next($request);
 
         if (Auth::check()) {
-            $response->header(TokenGuard::TOKEN_FIELD, Auth::authToken()->token);
+            header(TokenGuard::TOKEN_FIELD . ': ' . Auth::authToken()->token);
         }
         return $response;
     }

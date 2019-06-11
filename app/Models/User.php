@@ -52,6 +52,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read bool $is_evaluator
  * @property-read ProfessorDetails $professorDetails
  * @property-read Collection|User[] $students
+ * @property-read Collection|Paper[] $papers
  */
 class User extends Authenticatable
 {

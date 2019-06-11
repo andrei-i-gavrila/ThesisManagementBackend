@@ -26,14 +26,12 @@ class ExamSessionController extends Controller
      */
     public function create(Request $request)
     {
-        $this->validate($request, [
-            'id' => 'required|unique:exam_sessions,id'
+        $attributes = $this->validate($request, [
+            'name' => 'required|unique:exam_sessions,name'
         ]);
 
 
-        ExamSession::create([
-            'id' => $request->id
-        ]);
+        ExamSession::create($attributes);
     }
 
     /**

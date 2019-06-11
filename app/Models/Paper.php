@@ -5,6 +5,7 @@ namespace App\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -27,13 +28,28 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Paper whereStudentId($value)
  * @method static Builder|Paper whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read mixed $filename
  */
 class Paper extends Model
 {
-    protected $fillable = ['filepath', 'name'];
+    protected $fillable = ['filepath', 'name', 'student_id'];
+
+    protected $appends = ['filename'];
+
 
     public function student()
     {
         return $this->belongsTo(User::class, 'student_id');
+    }
+
+
+    public function getFilenameAttribute()
+    {
+        return basename($this->filepath);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 }

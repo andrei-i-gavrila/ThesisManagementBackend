@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Auth\TokenGuard;
-use App\Http\Middleware\Authenticate;
 use App\Models\AuthToken;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +35,9 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        DB::listen(function(QueryExecuted $query) {
+        DB::listen(function (QueryExecuted $query) {
             Log::info($query->sql);
+            Log::info($query->bindings);
         });
 
     }

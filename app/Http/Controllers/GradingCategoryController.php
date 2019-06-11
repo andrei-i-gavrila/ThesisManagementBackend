@@ -24,13 +24,13 @@ class GradingCategoryController extends Controller
         $attributes = $this->validate($request, [
             'id' => 'nullable|exists:grading_categories,id',
             'name' => 'required|string',
-            'description' => 'string',
-            'points' => 'required|numeric',
-            'parent_category' => 'nullable|exists:grading_categories,id'
+            'description' => 'nullable|string',
+            'points' => 'required|numeric|gt:0',
+            'parent_category_id' => 'nullable|exists:grading_categories,id'
         ]);
 
         $attributes['order'] = (GradingCategory::where([
-                    'exam_session_id' => $request->exam_session_id,
+                    'exam_session_id' => $examSession->id,
                     'parent_category_id' => $request->parent_category_id,
                 ])->max('order') ?? 0) + 1;
 
@@ -49,7 +49,7 @@ class GradingCategoryController extends Controller
         $attributes = $this->validate($request, [
             'name' => 'required|string',
             'description' => 'string',
-            'points' => 'required|float',
+            'points' => 'required|numeric|gt:0',
         ]);
 
         $gradingCategory->update($attributes);

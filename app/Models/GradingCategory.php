@@ -33,6 +33,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|GradingCategory wherePoints($value)
  * @method static Builder|GradingCategory whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property int $order
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereOrder($value)
  */
 class GradingCategory extends Model
 {
@@ -41,5 +43,10 @@ class GradingCategory extends Model
     public function subcategories(): HasMany
     {
         return $this->hasMany(GradingCategory::class, 'parent_category_id')->orderBy('order');
+    }
+
+    public function getPointsAttribute($points)
+    {
+        return floatval($points);
     }
 }
