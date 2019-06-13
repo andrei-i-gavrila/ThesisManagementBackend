@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Paper;
 use App\Models\User;
+use App\Services\TFIDF;
 use App\Services\WikipediaKeywordScraper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,7 +24,6 @@ use TextAnalysis\Filters\NumbersFilter;
 use TextAnalysis\Filters\PunctuationFilter;
 use TextAnalysis\Filters\QuotesFilter;
 use TextAnalysis\Filters\StopWordsFilter;
-use TextAnalysis\Indexes\TfIdf;
 use TextAnalysis\Stemmers\PorterStemmer;
 use TextAnalysis\Tokenizers\GeneralTokenizer;
 
@@ -42,6 +42,10 @@ class EvaluatorKeywordExtractor implements ShouldQueue
      * @var PorterStemmer
      */
     private $stemmer;
+    /**
+     * @var GeneralTokenizer
+     */
+    private $tokenizer;
 
     /**
      * Create a new job instance.
@@ -100,12 +104,13 @@ class EvaluatorKeywordExtractor implements ShouldQueue
 
         /** @noinspection PhpParamsInspection */
         $wordsFilter = new LambdaFilter(function ($word) {
-            return preg_replace('/\W+/', '', $word);
+            return preg_replace('/[^a-z]/', '', $word);
         });
 
         $transformations = [
             new LowerCaseFilter(),
             $wordsFilter,
+            $charFilter,
             new StopWordsFilter(StopWordFactory::get('stop-words_english_6_en.txt')),
         ];
         $stemmers = [
@@ -114,7 +119,7 @@ class EvaluatorKeywordExtractor implements ShouldQueue
         $collection->applyTransformations($transformations);
         $collection->applyStemmers($stemmers);
 
-        $tfIdf = new TfIdf($collection);
+        $tfIdf = new TFIDF($collection);
 
         $professorKeywords = $domainsByProffessor->map(function (Collection $domains) use ($documents, $tfIdf) {
             return $domains->filter()
@@ -169,8 +174,7 @@ class EvaluatorKeywordExtractor implements ShouldQueue
         $paperDocCollection->applyTransformations($transformations);
         $paperDocCollection->applyStemmers($stemmers);
 
-        $papersTfIdf = new TfIdf($paperDocCollection);
-
+        $papersTfIdf = new TFIDF($paperDocCollection);
         $paperDocs->map(function (TokensDocument $paperDoc) use ($papersTfIdf) {
             return collect(freq_dist($paperDoc->getDocumentData())->getKeyValuesByWeight())->transform(function ($score, $keyword) use ($papersTfIdf) {
                 return $score * $papersTfIdf->getIdf($keyword);
@@ -191,16 +195,24 @@ class EvaluatorKeywordExtractor implements ShouldQueue
                     return [$keyword, $keywords[$keyword], $scores[$keyword], $keywords[$keyword] * $scores[$keyword]];
                 })->sortByDesc(function ($item) {
                     return $item[3];
-                })->take(5);
+                });
             });
         })->map(function (Collection $profs) {
+            //            return $profs->map(function ($scores) {
+            //                return $scores->sum(function ($item) {
+            //                    return $item[3];
+            //                });
+            //            })->sortByDesc(function ($item) {
+            //                return $item;
+            //            });
+
             return $profs->sortByDesc(function (Collection $scores) {
                 return $scores->sum(function ($item) {
                     return $item[3];
                 });
-            })->map(function ($a, $b) {
+            })->take(5)->map(function ($a, $b) {
                 return [$a, $b];
-            })->take(4);
-        })->dd();
+            });
+        })->take(1)->dd();
     }
 }

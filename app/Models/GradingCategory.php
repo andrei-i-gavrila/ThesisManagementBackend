@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|GradingCategory whereUpdatedAt($value)
  * @mixin Eloquent
  * @property int $order
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereOrder($value)
+ * @method static Builder|GradingCategory whereOrder($value)
  */
 class GradingCategory extends Model
 {

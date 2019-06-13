@@ -59,9 +59,9 @@ class ProfessorImporter implements ShouldQueue
 
 
             $email = $match[2] . "@" . $match[3];
-            if (!in_array($email, $allowedMails)) {
-                continue;
-            }
+            //            if (!in_array($email, $allowedMails)) {
+            //                continue;
+            //            }
             $professor = User::firstOrNew(['email' => $email])->assignRole(Roles::PROFESSOR);
             $professor->save();
             $professor->professorDetails()->save(new ProfessorDetails([
