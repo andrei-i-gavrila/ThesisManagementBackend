@@ -28,7 +28,7 @@ class ProfessorDetailImporter implements ShouldQueue
     {
         $pageData = file_get_contents("http://www.cs.ubbcluj.ro/about-the-faculty/departments/department-of-computer-science/");
         $emailRegex = str_replace(['@', '.'], ['\\[at\\]', '\\.'], $this->professor->email);
-        $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?interest:\s(.*?)</m';
+        $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?interest:\s?(.*?)</m';
 
         Log::info($re);
 
@@ -38,6 +38,7 @@ class ProfessorDetailImporter implements ShouldQueue
             return;
         }
 
+
         ProfessorDetails::updateOrCreate([
             'professor_id' => $this->professor->id
         ], [
@@ -45,4 +46,5 @@ class ProfessorDetailImporter implements ShouldQueue
             'interest_domains' => $matches[2]
         ]);
     }
+
 }

@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Paper whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read mixed $filename
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
  */
 class Paper extends Model
 {

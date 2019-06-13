@@ -53,6 +53,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read ProfessorDetails $professorDetails
  * @property-read Collection|User[] $students
  * @property-read Collection|Paper[] $papers
+ * @property-read Collection|Keyword[] $keywords
+ * @method static Builder|User professor()
  */
 class User extends Authenticatable
 {

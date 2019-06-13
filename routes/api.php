@@ -1,5 +1,8 @@
 <?php
 
+use App\Jobs\EvaluatorKeywordExtractor;
+use App\Jobs\ProfessorImporter;
+use App\Services\wikidrain;
 use Illuminate\Support\Facades\Route;
 
 Route::namespace("Auth")->prefix("auth")->group(function () {
@@ -59,8 +62,17 @@ Route::middleware(["auth"])->group(function () {
         Route::get('{paper}/messages', "CommentController@getForPaper");
     });
 
-    Route::prefix('comments')->group(function() {
+    Route::prefix('comments')->group(function () {
         Route::post("{comment}", "CommentController@update");
         Route::delete("{comment}", "CommentController@delete");
     });
+});
+
+
+Route::get("/testi", function () {
+    dispatch_now(new ProfessorImporter());
+});
+
+Route::get("/test", function () {
+    dispatch_now(new EvaluatorKeywordExtractor());
 });
