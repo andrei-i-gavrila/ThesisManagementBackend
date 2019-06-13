@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -29,7 +31,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Paper whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read mixed $filename
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read Collection|Comment[] $comments
+ * @property-read PaperReview $review
  */
 class Paper extends Model
 {
@@ -52,5 +55,10 @@ class Paper extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(PaperReview::class);
     }
 }

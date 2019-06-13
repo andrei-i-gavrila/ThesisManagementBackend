@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProfessorKeywordTable extends Migration
+class CreatePaperReviewsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateProfessorKeywordTable extends Migration
      */
     public function up()
     {
-        Schema::create('professor_keyword', function (Blueprint $table) {
+        Schema::create('paper_reviews', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('professor_id');
-            $table->bigInteger('keyword_id');
 
+            $table->boolean('final');
+            $table->text('review');
+            $table->bigInteger('paper_id');
+            $table->bigInteger('professor_id');
+
+            $table->foreign('paper_id')->references('id')->on('papers')->onDelete('cascade');
             $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('keyword_id')->references('id')->on('keywords')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -32,6 +35,6 @@ class CreateProfessorKeywordTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('professor_keyword');
+        Schema::dropIfExists('paper_reviews');
     }
 }

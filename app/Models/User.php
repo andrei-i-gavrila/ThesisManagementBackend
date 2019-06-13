@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserCoordinator;
 use App\Traits\UserProfessor;
 use App\Traits\UserStudent;
 use Eloquent;
@@ -53,14 +54,17 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read ProfessorDetails $professorDetails
  * @property-read Collection|User[] $students
  * @property-read Collection|Paper[] $papers
- * @property-read Collection|Keyword[] $keywords
+ * @property-read Collection|DomainOfInterest[] $keywords
  * @method static Builder|User professor()
+ * @property-read Collection|DomainOfInterest[] $domainsOfInterest
  */
 class User extends Authenticatable
 {
     use Notifiable, HasRoles;
     use UserProfessor;
     use UserStudent;
+    use UserCoordinator;
+
     protected $guard_name = 'api';
     protected $fillable = ['email', 'name'];
     protected $hidden = ['password'];

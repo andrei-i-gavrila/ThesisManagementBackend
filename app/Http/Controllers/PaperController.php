@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Paper;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -48,15 +49,21 @@ class PaperController extends Controller
 
     public function getMine()
     {
-        return $this->get(Auth::user());
+        return Auth::user()->papers;
     }
 
     /**
      * @param User|Authenticatable $user
      * @return mixed
      */
-    public function get($user)
+    public function get(User $user)
     {
         return $user->papers;
+    }
+
+    public function getFinalizedPapers() {
+        return Paper::whereHas('review', function (Builder $query) {
+            return $query->where('final', true);
+        });
     }
 }

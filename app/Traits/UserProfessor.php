@@ -5,9 +5,8 @@ namespace App\Traits;
 
 
 use App\Enums\Roles;
-use App\Models\Keyword;
+use App\Models\DomainOfInterest;
 use App\Models\ProfessorDetails;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -33,13 +32,8 @@ trait UserProfessor
         return $this->hasOne(ProfessorDetails::class, 'professor_id');
     }
 
-    public function students(): BelongsToMany
+    public function domainsOfInterest(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'student_professor', 'professor_id', 'student_id');
-    }
-
-    public function keywords(): BelongsToMany
-    {
-        return $this->belongsToMany(Keyword::class, 'professor_keyword', 'professor_id', 'keyword_id');
+        return $this->belongsToMany(DomainOfInterest::class, 'professor_doi', 'professor_id', 'doi_id');
     }
 }
