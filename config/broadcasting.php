@@ -39,6 +39,7 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'encrypted' => true,
             ],
+            'log' => true,
         ],
 
         'redis' => [

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
+use App\Events\Professors\ProfessorCreated;
+use App\Events\Professors\StudentUpdated;
+use App\Events\Professors\StudentDeleted;
 use App\Jobs\ProfessorDetailImporter;
 use App\Models\User;
 use Exception;
@@ -26,6 +29,7 @@ class ProfessorsController extends Controller
         $professor->save();
 
         dispatch_now(new ProfessorDetailImporter($professor));
+        broadcast(new ProfessorCreated($professor));
     }
 
     /**
@@ -62,7 +66,7 @@ class ProfessorsController extends Controller
 
     public function getAll()
     {
-        return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email']);
+        return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email'])->keyBy->id;
     }
 
     /**
@@ -74,8 +78,9 @@ class ProfessorsController extends Controller
         //TODO solve deletion when having students assigned
 
         $this->checkIsProfessor($user);
-
         $user->delete();
+        broadcast(new StudentDeleted($user->id));
+
     }
 
     /**
@@ -101,6 +106,7 @@ class ProfessorsController extends Controller
         } else {
             $user->assignRole($role);
         }
+        broadcast(new StudentUpdated($user));
     }
 
     /**

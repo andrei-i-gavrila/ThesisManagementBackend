@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
+use App\Events\Students\StudentCreated;
+use App\Events\Students\StudentDeleted;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -23,6 +25,8 @@ class StudentsController extends Controller
         $this->validate($request, ['email' => 'required|email']);
         $student = User::firstOrCreate(['email' => $request->email])->assignRole(Roles::STUDENT);
         Auth::user()->students()->attach($student);
+
+        broadcast(new StudentCreated($student));
     }
 
     /**
@@ -33,7 +37,7 @@ class StudentsController extends Controller
     public function get(User $user)
     {
         $this->checkIsStudent($user);
-        return $user;
+        return $user->load('papers');
     }
 
     /**
@@ -49,12 +53,12 @@ class StudentsController extends Controller
 
     public function getAll()
     {
-        return User::role(Roles::STUDENT)->get(['id', 'name', 'email']);
+        return User::role(Roles::STUDENT)->get(['id', 'name', 'email'])->keyBy->id;
     }
 
     public function getMyStudents()
     {
-        return Auth::user()->students()->get(['users.id', 'name', 'email']);
+        return Auth::user()->students()->get(['users.id', 'name', 'email'])->keyBy->id;
 
     }
 
@@ -67,6 +71,8 @@ class StudentsController extends Controller
         $this->checkIsStudent($user);
 
         $user->delete();
+
+        broadcast(new StudentDeleted($user->id));
     }
 
 }

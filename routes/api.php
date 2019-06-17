@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestEvent;
 use App\Jobs\EvaluatorKeywordExtractor;
 use App\Jobs\ProfessorImporter;
 use App\Services\wikidrain;
