@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ExamSessions\ExamSessionUpdated;
 use App\Models\ExamSession;
 use App\Models\GradingCategory;
 use Exception;
@@ -37,6 +38,7 @@ class GradingCategoryController extends Controller
 
         $examSession->gradingCategories()->save(new GradingCategory($attributes));
         DB::commit();
+        broadcast(new ExamSessionUpdated($examSession->load('gradingCategories')));
     }
 
     /**
@@ -48,11 +50,12 @@ class GradingCategoryController extends Controller
     {
         $attributes = $this->validate($request, [
             'name' => 'required|string',
-            'description' => 'string',
+            'description' => 'nullable|string',
             'points' => 'required|numeric|gt:0',
         ]);
 
         $gradingCategory->update($attributes);
+        broadcast(new ExamSessionUpdated($gradingCategory->examSession->load('gradingCategories')));
     }
 
     public function getCategories(ExamSession $examSession)
@@ -68,6 +71,7 @@ class GradingCategoryController extends Controller
     public function deleteCategory(GradingCategory $gradingCategory)
     {
         $gradingCategory->delete();
+        broadcast(new ExamSessionUpdated($gradingCategory->examSession));
     }
 
     /**
@@ -101,6 +105,7 @@ class GradingCategoryController extends Controller
             $next->save();
         }
         DB::commit();
+        broadcast(new ExamSessionUpdated($gradingCategory->examSession->load('gradingCategories')));
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ExamSessions\ExamSessionDeleted;
+use App\Events\ExamSessions\ExamSessionUpdated;
 use App\Models\ExamSession;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +13,7 @@ class ExamSessionController extends Controller
 {
     public function index()
     {
-        return ExamSession::query()->latest()->get();
+        return ExamSession::query()->latest()->get()->keyBy->name;
     }
 
     public function get(ExamSession $examSession)
@@ -31,7 +33,8 @@ class ExamSessionController extends Controller
         ]);
 
 
-        ExamSession::create($attributes);
+        $examSession = ExamSession::create($attributes);
+        broadcast(new ExamSessionUpdated($examSession));
     }
 
     /**
@@ -41,6 +44,7 @@ class ExamSessionController extends Controller
     public function delete(ExamSession $examSession)
     {
         $examSession->delete();
+        broadcast(new ExamSessionDeleted($examSession->id));
     }
 
 }

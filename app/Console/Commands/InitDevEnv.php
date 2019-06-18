@@ -28,6 +28,5 @@ class InitDevEnv extends Command
         Artisan::call('roles:update');
         Artisan::call('ide-helper:models', ["-W" => true]);
         ExamSession::create(['name' => 'test']);
-
     }
 }

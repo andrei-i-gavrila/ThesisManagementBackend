@@ -30,6 +30,7 @@ class ProfessorDetailImporter implements ShouldQueue
         $emailRegex = str_replace(['@', '.'], ['\\[at\\]', '\\.'], $this->professor->email);
         $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?interest:\s?(.*?)</m';
 
+
         Log::info($re);
 
         preg_match($re, $pageData, $matches);

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -32,13 +31,14 @@ use Illuminate\Support\Carbon;
  * @mixin Eloquent
  * @property-read mixed $filename
  * @property-read Collection|Comment[] $comments
- * @property-read PaperReview $review
+ * @property string $link
+ * @property-read Collection|PaperRevision[] $revisions
+ * @method static Builder|Paper whereA($value)
+ * @method static Builder|Paper whereLink($value)
  */
 class Paper extends Model
 {
-    protected $fillable = ['filepath', 'name', 'student_id'];
-
-    protected $appends = ['filename'];
+    protected $fillable = ['name', 'student_id', 'link'];
 
 
     public function student()
@@ -46,19 +46,8 @@ class Paper extends Model
         return $this->belongsTo(User::class, 'student_id');
     }
 
-
-    public function getFilenameAttribute()
+    public function revisions(): HasMany
     {
-        return basename($this->filepath);
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function review(): HasOne
-    {
-        return $this->hasOne(PaperReview::class);
+        return $this->hasMany(PaperRevision::class);
     }
 }

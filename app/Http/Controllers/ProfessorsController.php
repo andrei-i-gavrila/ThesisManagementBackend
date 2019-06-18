@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
-use App\Events\Professors\ProfessorCreated;
-use App\Events\Professors\StudentUpdated;
-use App\Events\Professors\StudentDeleted;
+use App\Events\Professors\ProfessorDeleted;
+use App\Events\Professors\ProfessorUpdated;
 use App\Jobs\ProfessorDetailImporter;
 use App\Models\User;
 use Exception;
@@ -29,7 +28,7 @@ class ProfessorsController extends Controller
         $professor->save();
 
         dispatch_now(new ProfessorDetailImporter($professor));
-        broadcast(new ProfessorCreated($professor));
+        broadcast(new ProfessorUpdated($professor->load('professorDetails')));
     }
 
     /**
@@ -62,6 +61,7 @@ class ProfessorsController extends Controller
     {
         $this->checkIsProfessor($user);
         dispatch_now(new ProfessorDetailImporter($user));
+        broadcast(new ProfessorUpdated($user->load('professorDetails')));
     }
 
     public function getAll()
@@ -79,7 +79,7 @@ class ProfessorsController extends Controller
 
         $this->checkIsProfessor($user);
         $user->delete();
-        broadcast(new StudentDeleted($user->id));
+        broadcast(new ProfessorDeleted($user->id));
 
     }
 
@@ -106,7 +106,7 @@ class ProfessorsController extends Controller
         } else {
             $user->assignRole($role);
         }
-        broadcast(new StudentUpdated($user));
+        broadcast(new ProfessorUpdated($user));
     }
 
     /**

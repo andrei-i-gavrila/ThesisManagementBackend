@@ -12,6 +12,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-simplexml": "*",
+        "barryvdh/laravel-dompdf": "^0.8.4",
         "barryvdh/laravel-ide-helper": "^2.6",
         "curl/curl": "^2.2",
         "doctrine/dbal": "^2.9",

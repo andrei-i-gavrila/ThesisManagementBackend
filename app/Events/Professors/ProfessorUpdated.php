@@ -2,6 +2,7 @@
 
 namespace App\Events\Professors;
 
+use App\Events\BaseEvent;
 use App\Models\User;
 use Illuminate\Broadcasting\PrivateChannel;
 
@@ -17,8 +18,8 @@ class ProfessorUpdated extends BaseEvent
         $this->professor = $user;
     }
 
-    public function broadcastOn()
+    public function channel(): string
     {
-        return new PrivateChannel('professors' . $this->professor->id);
+        return 'professors';
     }
 }

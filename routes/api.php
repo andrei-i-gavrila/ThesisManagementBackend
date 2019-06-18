@@ -22,6 +22,7 @@ Route::middleware(["auth"])->group(function () {
         Route::get("/", "ExamSessionController@index");
         Route::post("/", "ExamSessionController@create");
         Route::delete("/{examSession}", "ExamSessionController@delete");
+        Route::get("/{examSession}", "ExamSessionController@get");
 
         Route::get("/{examSession}/gradingCategory", "GradingCategoryController@getCategories");
         Route::post("/{examSession}/gradingCategory", "GradingCategoryController@saveCategory");
@@ -53,19 +54,31 @@ Route::middleware(["auth"])->group(function () {
         Route::get("{user}", "StudentsController@get");
     });
 
-    Route::prefix("papers")->group(function () {
-        Route::get("/mine", "PaperController@getMine");
-        Route::post("/", "PaperController@create");
-        Route::get("/{paper}/download", "PaperController@download");
-        Route::get("/user/{user}", "PaperController@get");
+    Route::prefix("revisions")->group(function () {
+        Route::post("/", "PaperRevisionController@create");
+        Route::get("/{paperRevision}/download", "PaperRevisionController@download");
 
-        Route::post('{paper}/messages', "CommentController@create");
-        Route::get('{paper}/messages', "CommentController@getForPaper");
+        Route::post('{paperRevision}/messages', "CommentController@create");
+        Route::get('{paperRevision}/messages', "CommentController@getForPaper");
     });
+
+
+    Route::prefix("papers")->group(function () {
+        Route::post("/", "PaperController@updateDetails");
+        Route::get("/user/{user}", "PaperController@getWithRevisions");
+    });
+
 
     Route::prefix('comments')->group(function () {
         Route::post("{comment}", "CommentController@update");
         Route::delete("{comment}", "CommentController@delete");
+    });
+
+    Route::prefix('review/{student}')->group(function () {
+        Route::get("", "FinalReviewController@get");
+        Route::get("download", "FinalReviewController@download");
+        Route::post("", "FinalReviewController@store");
+        Route::delete("", "FinalReviewController@delete");
     });
 });
 
@@ -76,4 +89,12 @@ Route::get("/testi", function () {
 
 Route::get("/test", function () {
     dispatch_now(new EvaluatorKeywordExtractor());
+});
+
+Route::get('/testreview', function () {
+    return PDF::loadView('pdf.review')->stream();
+});
+
+Route::get('/testreviewh', function () {
+    return view('pdf.review');
 });

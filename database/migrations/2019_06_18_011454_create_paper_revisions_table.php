@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePaperReviewsTable extends Migration
+class CreatePaperRevisionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,13 @@ class CreatePaperReviewsTable extends Migration
      */
     public function up()
     {
-        Schema::create('paper_reviews', function (Blueprint $table) {
+        Schema::create('paper_revisions', function (Blueprint $table) {
             $table->bigIncrements('id');
-
-            $table->boolean('final');
-            $table->text('review');
+            $table->string("name");
+            $table->string('filepath');
             $table->bigInteger('paper_id');
-            $table->bigInteger('professor_id');
 
             $table->foreign('paper_id')->references('id')->on('papers')->onDelete('cascade');
-            $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
-
             $table->timestamps();
         });
     }
@@ -35,6 +31,6 @@ class CreatePaperReviewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paper_reviews');
+        Schema::dropIfExists('paper_revisions');
     }
 }

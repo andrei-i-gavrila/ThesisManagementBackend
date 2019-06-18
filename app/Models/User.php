@@ -57,6 +57,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read Collection|DomainOfInterest[] $keywords
  * @method static Builder|User professor()
  * @property-read Collection|DomainOfInterest[] $domainsOfInterest
+ * @property-read \App\Models\Paper $paper
+ * @property-read \App\Models\FinalReview $review
  */
 class User extends Authenticatable
 {
@@ -66,13 +68,15 @@ class User extends Authenticatable
     use UserCoordinator;
 
     protected $guard_name = 'api';
-    protected $fillable = ['email', 'name'];
+    protected $fillable = ['email', 'name', 'activated'];
     protected $hidden = ['password'];
 
     public function getNameAttribute($name)
     {
         return $name ?? $this->email;
     }
+
+
 
 
 }

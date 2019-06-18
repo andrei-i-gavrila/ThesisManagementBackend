@@ -5,6 +5,7 @@ namespace App\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -26,9 +27,23 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Comment whereUpdatedAt($value)
  * @method static Builder|Comment whereUserId($value)
  * @mixin Eloquent
+ * @property int $paper_revision_id
+ * @method static Builder|Comment wherePaperRevisionId($value)
+ * @property-read \App\Models\PaperRevision $paperRevision
+ * @property-read \App\Models\User $user
  */
 class Comment extends Model
 {
     protected $fillable = ['message', 'user_id'];
 
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function paperRevision(): BelongsTo
+    {
+        return $this->belongsTo(PaperRevision::class);
+    }
 }
