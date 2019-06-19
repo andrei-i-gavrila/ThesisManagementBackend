@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Events\ExamSessions\ExamSessionDeleted;
 use App\Events\ExamSessions\ExamSessionUpdated;
+use App\Jobs\LexicalOrderAssignationJob;
+use App\Jobs\RandomAssignationJob;
 use App\Models\ExamSession;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,12 +15,12 @@ class ExamSessionController extends Controller
 {
     public function index()
     {
-        return ExamSession::query()->latest()->get()->keyBy->name;
+        return ExamSession::query()->latest()->get()->keyBy('name')->toJson(JSON_FORCE_OBJECT);
     }
 
     public function get(ExamSession $examSession)
     {
-        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories', 'committees']);
+        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories', 'committees', 'committees.leader', 'committees.secretary', 'committees.assignedStudents:users.id,users.name,email']);
     }
 
     /**
@@ -45,6 +47,17 @@ class ExamSessionController extends Controller
     {
         $examSession->delete();
         broadcast(new ExamSessionDeleted($examSession->id));
+    }
+
+
+    public function randomAssignment(ExamSession $examSession)
+    {
+        dispatch_now(new RandomAssignationJob($examSession));
+    }
+
+    public function lexicalOrderAssignment(ExamSession $examSession)
+    {
+        dispatch_now(new LexicalOrderAssignationJob($examSession));
     }
 
 }

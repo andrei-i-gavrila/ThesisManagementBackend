@@ -28,6 +28,8 @@ Route::middleware(["auth"])->group(function () {
         Route::post("/{examSession}/gradingCategory", "GradingCategoryController@saveCategory");
 
         Route::post("/{examSession}/committee", "CommitteeController@create");
+        Route::post("/{examSession}/randomOrder", "ExamSessionController@randomAssignment");
+        Route::post("/{examSession}/lexicalOrder", "ExamSessionController@lexicalOrderAssignment");
     });
 
 
@@ -43,14 +45,17 @@ Route::middleware(["auth"])->group(function () {
         Route::get("/", "ProfessorsController@getAll");
         Route::delete("{user}", "ProfessorsController@delete");
         Route::get("{user}", "ProfessorsController@get");
-        Route::post("{user}/toggle/coordinator", "ProfessorsController@toggleCoordinator");
-        Route::post("{user}/toggle/evaluator", "ProfessorsController@toggleEvaluator");
         Route::post("{user}/reimport", "ProfessorsController@reimportDetails");
+    });
+
+    Route::prefix('/doi')->group(function() {
+        Route::get('/{user}', "DomainOfInterestController@get");
+        Route::post('', "DomainOfInterestController@create");
+        Route::delete('/{domainOfInterest}', "DomainOfInterestController@remove");
     });
 
     Route::prefix("students")->group(function () {
         Route::post("/", "StudentsController@create");
-        Route::get("/all", "StudentsController@getAll");
         Route::get("/", "StudentsController@getMyStudents");
         Route::delete("{user}", "StudentsController@delete");
         Route::get("{user}", "StudentsController@get");

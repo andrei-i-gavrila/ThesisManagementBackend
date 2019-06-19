@@ -53,14 +53,9 @@ class StudentsController extends Controller
         }
     }
 
-    public function getAll()
-    {
-        return User::role(Roles::STUDENT)->get(['id', 'name', 'email'])->keyBy->id;
-    }
-
     public function getMyStudents()
     {
-        return Auth::user()->students()->get(['users.id', 'name', 'email'])->keyBy->id;
+        return Auth::user()->students()->get(['users.id', 'name', 'email'])->keyBy('id')->toJson(JSON_FORCE_OBJECT);
     }
 
     /**

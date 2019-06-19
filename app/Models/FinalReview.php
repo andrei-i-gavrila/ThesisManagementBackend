@@ -48,6 +48,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereStructure($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereStudentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereUpdatedAt($value)
+ * @property int $exam_session_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereExamSessionId($value)
  */
 class FinalReview extends Model
 {

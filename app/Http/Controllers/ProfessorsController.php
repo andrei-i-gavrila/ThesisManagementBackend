@@ -39,7 +39,7 @@ class ProfessorsController extends Controller
     public function get(User $user)
     {
         $this->checkIsProfessor($user);
-        return $user->load('professorDetails')->append(['isEvaluator', 'isCoordinator']);
+        return $user->load('professorDetails');
     }
 
     /**
@@ -66,7 +66,7 @@ class ProfessorsController extends Controller
 
     public function getAll()
     {
-        return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email'])->keyBy->id;
+        return User::role(Roles::PROFESSOR)->get(['id', 'name', 'email'])->keyBy('id')->toJson(JSON_FORCE_OBJECT);
     }
 
     /**
@@ -81,40 +81,5 @@ class ProfessorsController extends Controller
         $user->delete();
         broadcast(new ProfessorDeleted($user->id));
 
-    }
-
-    /**
-     * @param User $user
-     * @throws AuthorizationException
-     */
-    public function toggleCoordinator(User $user)
-    {
-        $this->toggleRole($user, Roles::COORDINATOR);
-    }
-
-    /**
-     * @param User $user
-     * @param string $role
-     * @throws AuthorizationException
-     */
-    private function toggleRole(User $user, string $role): void
-    {
-        $this->checkIsProfessor($user);
-
-        if ($user->hasRole($role)) {
-            $user->removeRole($role);
-        } else {
-            $user->assignRole($role);
-        }
-        broadcast(new ProfessorUpdated($user));
-    }
-
-    /**
-     * @param User $user
-     * @throws AuthorizationException
-     */
-    public function toggleEvaluator(User $user)
-    {
-        $this->toggleRole($user, Roles::EVALUATOR);
     }
 }

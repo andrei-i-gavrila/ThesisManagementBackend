@@ -25,6 +25,9 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|GradingCategory[] $gradingCategories
  * @property string $name
  * @method static Builder|ExamSession whereName($value)
+ * @property-read Collection|Committee[] $committees
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $students
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FinalReview[] $finalReviews
  */
 class ExamSession extends Model
 {
@@ -44,4 +47,15 @@ class ExamSession extends Model
     {
         return $this->hasMany(Committee::class);
     }
+
+    public function getStudentsAttribute()
+    {
+        return $this->finalReviews()->with('student')->get()->map->student;
+    }
+
+    public function finalReviews(): HasMany
+    {
+        return $this->hasMany(FinalReview::class);
+    }
+
 }

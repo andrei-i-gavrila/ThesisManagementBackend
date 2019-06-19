@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Models\Committee;
 use App\Models\ExamSession;
 use Exception;
@@ -58,6 +59,14 @@ class CommitteeController extends Controller
      */
     public function delete(Committee $committee)
     {
+        if ($committee->leader_id) $committee->leader->removeRole(Roles::EVALUATOR);
+        if ($committee->member1_id) $committee->member1->removeRole(Roles::EVALUATOR);
+        if ($committee->member2_id) $committee->member2->removeRole(Roles::EVALUATOR);
+        if ($committee->secretary_id) $committee->member2->removeRole(Roles::SECRETARY);
+
+
         $committee->delete();
     }
+
+
 }

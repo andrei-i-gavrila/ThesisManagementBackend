@@ -65,7 +65,6 @@ class User extends Authenticatable
     use Notifiable, HasRoles;
     use UserProfessor;
     use UserStudent;
-    use UserCoordinator;
 
     protected $guard_name = 'api';
     protected $fillable = ['email', 'name', 'activated'];

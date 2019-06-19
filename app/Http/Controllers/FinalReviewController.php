@@ -19,6 +19,7 @@ class FinalReviewController extends Controller
     public function store(Request $request, User $student)
     {
         $attributes = $this->validate($request, [
+            'exam_session_id' => 'required|integer|exists:exam_sessions,id',
             'overall' => 'required|integer|between:1,4',
             'grade_recommendation' => 'required|integer|between:1,3',
             'structure' => 'required|integer|between:1,5',

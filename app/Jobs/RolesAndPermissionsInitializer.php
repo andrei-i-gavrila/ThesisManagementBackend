@@ -23,20 +23,23 @@ class RolesAndPermissionsInitializer implements ShouldQueue
             Permissions::MANAGE_SESSIONS,
             Permissions::MANAGE_GRADING_SCHEMES
         ],
-        Roles::PROFESSOR => [],
-        Roles::COORDINATOR => [
+        Roles::PROFESSOR => [
+            Permissions::MANAGE_KEYWORDS,
+            Permissions::SEE_LIST_OF_PAPERS,
             Permissions::MANAGE_STUDENTS,
             Permissions::DISCUSS_PAPERS
         ],
         Roles::EVALUATOR => [
-            Permissions::MANAGE_KEYWORDS,
-            Permissions::SEE_STUDENTS,
             Permissions::GRADE,
         ],
         Roles::STUDENT => [
             Permissions::MANAGE_THESIS_PAPERS,
             Permissions::DISCUSS_PAPERS,
-            Permissions::SEE_EVALUATORS
+            Permissions::SEE_EVALUATORS,
+            Permissions::SEE_COMMITTEES
+        ],
+        Roles::SECRETARY => [
+
         ]
     ];
 
