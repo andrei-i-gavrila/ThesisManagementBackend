@@ -18,7 +18,7 @@ class ExamSessionController extends Controller
 
     public function get(ExamSession $examSession)
     {
-        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories']);
+        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories', 'committees']);
     }
 
     /**

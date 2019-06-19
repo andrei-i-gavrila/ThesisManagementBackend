@@ -39,4 +39,9 @@ class ExamSession extends Model
     {
         return $this->hasMany(GradingCategory::class)->whereNull('parent_category_id')->orderBy('order');
     }
+
+    public function committees(): HasMany
+    {
+        return $this->hasMany(Committee::class);
+    }
 }

@@ -26,6 +26,8 @@ Route::middleware(["auth"])->group(function () {
 
         Route::get("/{examSession}/gradingCategory", "GradingCategoryController@getCategories");
         Route::post("/{examSession}/gradingCategory", "GradingCategoryController@saveCategory");
+
+        Route::post("/{examSession}/committee", "CommitteeController@create");
     });
 
 
@@ -79,6 +81,12 @@ Route::middleware(["auth"])->group(function () {
         Route::get("download", "FinalReviewController@download");
         Route::post("", "FinalReviewController@store");
         Route::delete("", "FinalReviewController@delete");
+    });
+
+
+    Route::prefix('committee/{committee}')->group(function () {
+        Route::post("", "CommitteeController@update");
+        Route::delete("", "CommitteeController@delete");
     });
 });
 
