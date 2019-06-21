@@ -6,17 +6,17 @@ namespace App\Traits;
 
 use App\Models\FinalReview;
 use App\Models\Paper;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait UserStudent
 {
-    public function paper(): HasOne
+    public function paper(): HasMany
     {
-        return $this->hasOne(Paper::class, 'student_id');
+        return $this->hasMany(Paper::class, 'student_id');
     }
 
-    public function review(): HasOne
+    public function review(): HasMany
     {
-        return $this->hasOne(FinalReview::class, 'student_id');
+        return $this->hasMany(FinalReview::class, 'student_id');
     }
 }

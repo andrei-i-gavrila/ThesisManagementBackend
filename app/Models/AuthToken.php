@@ -8,24 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+
 /**
  * App\Models\AuthToken
  *
- * @property-read User $user
- * @method static Builder|AuthToken newModelQuery()
- * @method static Builder|AuthToken newQuery()
- * @method static Builder|AuthToken query()
- * @mixin Eloquent
  * @property string $token
  * @property int $user_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static Builder|AuthToken whereCreatedAt($value)
- * @method static Builder|AuthToken whereToken($value)
- * @method static Builder|AuthToken whereUpdatedAt($value)
- * @method static Builder|AuthToken whereUserId($value)
- * @property Carbon $expiration_time
- * @method static Builder|AuthToken whereExpirationTime($value)
+ * @property \Illuminate\Support\Carbon|null $expiration_time
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken whereExpirationTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\AuthToken whereUserId($value)
+ * @mixin \Eloquent
  */
 class AuthToken extends Model
 {

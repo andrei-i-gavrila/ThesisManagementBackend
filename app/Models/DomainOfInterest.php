@@ -12,16 +12,16 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $name
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static Builder|DomainOfInterest newModelQuery()
- * @method static Builder|DomainOfInterest newQuery()
- * @method static Builder|DomainOfInterest query()
- * @method static Builder|DomainOfInterest whereCreatedAt($value)
- * @method static Builder|DomainOfInterest whereId($value)
- * @method static Builder|DomainOfInterest whereName($value)
- * @method static Builder|DomainOfInterest whereUpdatedAt($value)
- * @mixin Eloquent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class DomainOfInterest extends Model
 {

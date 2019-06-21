@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ExamSessions\ExamSessionDeleted;
-use App\Events\ExamSessions\ExamSessionUpdated;
 use App\Jobs\LexicalOrderAssignationJob;
 use App\Jobs\RandomAssignationJob;
 use App\Models\ExamSession;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class ExamSessionController extends Controller
 {
     public function index()
     {
-        return ExamSession::query()->latest()->get()->keyBy('name')->toJson(JSON_FORCE_OBJECT);
-    }
-
-    public function get(ExamSession $examSession)
-    {
-        return $examSession->load(['gradingCategories', 'gradingCategories.subcategories', 'committees', 'committees.leader', 'committees.secretary', 'committees.assignedStudents:users.id,users.name,email']);
+        return ExamSession::query()->latest()->get();
     }
 
     /**
@@ -31,12 +25,14 @@ class ExamSessionController extends Controller
     public function create(Request $request)
     {
         $attributes = $this->validate($request, [
-            'name' => 'required|unique:exam_sessions,name'
+            'name' => 'required|string',
+            'department' => 'required|string'
         ]);
 
+        $attributes['presentation_name'] = $attributes['name'];
+        $attributes['name'] = Str::slug($attributes['name']);
 
-        $examSession = ExamSession::create($attributes);
-        broadcast(new ExamSessionUpdated($examSession));
+        ExamSession::create($attributes);
     }
 
     /**
@@ -46,7 +42,6 @@ class ExamSessionController extends Controller
     public function delete(ExamSession $examSession)
     {
         $examSession->delete();
-        broadcast(new ExamSessionDeleted($examSession->id));
     }
 
 

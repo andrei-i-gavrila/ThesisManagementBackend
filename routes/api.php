@@ -22,12 +22,12 @@ Route::middleware(["auth"])->group(function () {
         Route::get("/", "ExamSessionController@index");
         Route::post("/", "ExamSessionController@create");
         Route::delete("/{examSession}", "ExamSessionController@delete");
-        Route::get("/{examSession}", "ExamSessionController@get");
 
         Route::get("/{examSession}/gradingCategory", "GradingCategoryController@getCategories");
         Route::post("/{examSession}/gradingCategory", "GradingCategoryController@saveCategory");
 
         Route::post("/{examSession}/committee", "CommitteeController@create");
+        Route::get("/{examSession}/committee", "CommitteeController@get");
         Route::post("/{examSession}/randomOrder", "ExamSessionController@randomAssignment");
         Route::post("/{examSession}/lexicalOrder", "ExamSessionController@lexicalOrderAssignment");
     });
@@ -62,7 +62,7 @@ Route::middleware(["auth"])->group(function () {
     });
 
     Route::prefix("revisions")->group(function () {
-        Route::post("/", "PaperRevisionController@create");
+        Route::post("/{paper}", "PaperRevisionController@create");
         Route::get("/{paperRevision}/download", "PaperRevisionController@download");
 
         Route::post('{paperRevision}/messages', "CommentController@create");
@@ -71,8 +71,8 @@ Route::middleware(["auth"])->group(function () {
 
 
     Route::prefix("papers")->group(function () {
-        Route::post("/", "PaperController@updateDetails");
-        Route::get("/user/{user}", "PaperController@getWithRevisions");
+        Route::post("/{examSession}", "PaperController@updateDetails");
+        Route::get("/{examSession}/user/{user}", "PaperController@getWithRevisions");
     });
 
 
@@ -81,7 +81,7 @@ Route::middleware(["auth"])->group(function () {
         Route::delete("{comment}", "CommentController@delete");
     });
 
-    Route::prefix('review/{student}')->group(function () {
+    Route::prefix('review/{paper}')->group(function () {
         Route::get("", "FinalReviewController@get");
         Route::get("download", "FinalReviewController@download");
         Route::post("", "FinalReviewController@store");
@@ -92,6 +92,15 @@ Route::middleware(["auth"])->group(function () {
     Route::prefix('committee/{committee}')->group(function () {
         Route::post("", "CommitteeController@update");
         Route::delete("", "CommitteeController@delete");
+    });
+
+    Route::prefix('liveGrading')->group(function() {
+        Route::get('/{examSession}/papers', "LiveGradingController@papers");
+        Route::get('/{examSession}/committee', "LiveGradingController@committee");
+        Route::get('/papers/{paper}', "LiveGradingController@paperData");
+        Route::get('/papers/{paper}/grades', "LiveGradingController@grades");
+        Route::get('/papers/{paper}/grades', "LiveGradingController@grades");
+        Route::post('/papers/{paper}/grades/{category}', "LiveGradingController@setGrade");
     });
 });
 

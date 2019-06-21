@@ -12,26 +12,30 @@ use Illuminate\Support\Carbon;
 /**
  * App\Models\ExamSession
  *
- * @property string $id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static Builder|ExamSession newModelQuery()
- * @method static Builder|ExamSession newQuery()
- * @method static Builder|ExamSession query()
- * @method static Builder|ExamSession whereCreatedAt($value)
- * @method static Builder|ExamSession whereId($value)
- * @method static Builder|ExamSession whereUpdatedAt($value)
- * @mixin Eloquent
- * @property-read Collection|GradingCategory[] $gradingCategories
+ * @property int $id
  * @property string $name
- * @method static Builder|ExamSession whereName($value)
- * @property-read Collection|Committee[] $committees
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $students
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FinalReview[] $finalReviews
+ * @property string $presentation_name
+ * @property string $department
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Committee[] $committees
+ * @property-read mixed $students
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\GradingCategory[] $gradingCategories
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Paper[] $papers
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession whereDepartment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession wherePresentationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamSession whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ExamSession extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'presentation_name', 'department'];
 
     public function getRouteKeyName()
     {
@@ -50,12 +54,12 @@ class ExamSession extends Model
 
     public function getStudentsAttribute()
     {
-        return $this->finalReviews()->with('student')->get()->map->student;
+        return $this->papers()->whereHas('review')->with('student')->get()->map->student;
     }
-
-    public function finalReviews(): HasMany
+    
+    public function papers(): HasMany
     {
-        return $this->hasMany(FinalReview::class);
+        return $this->hasMany(Paper::class);
     }
 
 }

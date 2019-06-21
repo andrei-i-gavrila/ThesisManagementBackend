@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ExamSession;
+use App\Models\Paper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -33,10 +34,10 @@ class LexicalOrderAssignationJob implements ShouldQueue
     public function handle()
     {
         $committees = $this->examSession->committees;
-        $studentsGroups = $this->examSession->students->sortBy('name')->split($committees->count());
+        $paperGroups = $this->examSession->papers->load('student')->sortBy('student.name')->pluck('id')->split($committees->count());
 
-        $committees->zip($studentsGroups)->each(function ($pair) {
-            $pair[0]->assignedStudents()->sync($pair[1]);
+        $committees->zip($paperGroups)->each(function ($pair) {
+            Paper::query()->whereIn('id', $pair[1])->update(['committee_id' => $pair[0]->id]);
         });
     }
 }

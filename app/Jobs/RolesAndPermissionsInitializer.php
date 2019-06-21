@@ -21,7 +21,8 @@ class RolesAndPermissionsInitializer implements ShouldQueue
         Roles::ADMIN => [
             Permissions::MANAGE_PROFESSORS,
             Permissions::MANAGE_SESSIONS,
-            Permissions::MANAGE_GRADING_SCHEMES
+            Permissions::MANAGE_GRADING_SCHEMES,
+            Permissions::MANAGE_COMMITTEES
         ],
         Roles::PROFESSOR => [
             Permissions::MANAGE_KEYWORDS,

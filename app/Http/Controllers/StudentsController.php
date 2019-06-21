@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Roles;
-use App\Events\Students\StudentDeleted;
-use App\Events\Students\StudentUpdated;
 use App\Models\Paper;
 use App\Models\User;
 use Exception;
@@ -25,10 +23,7 @@ class StudentsController extends Controller
     {
         $this->validate($request, ['email' => 'required|email']);
         $student = User::firstOrCreate(['email' => $request->email])->assignRole(Roles::STUDENT);
-        $student->paper()->save(new Paper());
         Auth::user()->students()->attach($student);
-
-        broadcast(new StudentUpdated($student));
     }
 
     /**
@@ -67,8 +62,6 @@ class StudentsController extends Controller
         $this->checkIsStudent($user);
 
         $user->delete();
-
-        broadcast(new StudentDeleted($user->id));
     }
 
 }

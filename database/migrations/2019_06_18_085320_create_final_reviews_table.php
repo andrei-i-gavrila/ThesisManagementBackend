@@ -16,7 +16,6 @@ class CreateFinalReviewsTable extends Migration
         Schema::create('final_reviews', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->bigInteger('exam_session_id');
             $table->integer('overall');
             $table->integer('grade_recommendation');
             $table->integer('structure');
@@ -35,11 +34,10 @@ class CreateFinalReviewsTable extends Migration
 
 
             $table->bigInteger('professor_id');
-            $table->bigInteger('student_id');
+            $table->bigInteger('paper_id');
 
             $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('exam_session_id')->references('id')->on('exam_sessions')->onDelete('cascade');
+            $table->foreign('paper_id')->references('id')->on('papers')->onDelete('cascade');
             $table->timestamps();
         });
     }

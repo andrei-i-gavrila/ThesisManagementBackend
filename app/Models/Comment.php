@@ -13,24 +13,22 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $message
- * @property int $paper_id
- * @property int $user_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @method static Builder|Comment newModelQuery()
- * @method static Builder|Comment newQuery()
- * @method static Builder|Comment query()
- * @method static Builder|Comment whereCreatedAt($value)
- * @method static Builder|Comment whereId($value)
- * @method static Builder|Comment whereMessage($value)
- * @method static Builder|Comment wherePaperId($value)
- * @method static Builder|Comment whereUpdatedAt($value)
- * @method static Builder|Comment whereUserId($value)
- * @mixin Eloquent
  * @property int $paper_revision_id
- * @method static Builder|Comment wherePaperRevisionId($value)
+ * @property int $user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\PaperRevision $paperRevision
  * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment wherePaperRevisionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereUserId($value)
+ * @mixin \Eloquent
  */
 class Comment extends Model
 {

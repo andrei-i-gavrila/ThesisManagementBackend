@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinalReview;
-use App\Models\User;
+use App\Models\Paper;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -13,13 +13,12 @@ class FinalReviewController extends Controller
 {
     /**
      * @param Request $request
-     * @param User $student
+     * @param Paper $paper
      * @throws ValidationException
      */
-    public function store(Request $request, User $student)
+    public function store(Request $request, Paper $paper)
     {
         $attributes = $this->validate($request, [
-            'exam_session_id' => 'required|integer|exists:exam_sessions,id',
             'overall' => 'required|integer|between:1,4',
             'grade_recommendation' => 'required|integer|between:1,3',
             'structure' => 'required|integer|between:1,5',
@@ -36,24 +35,26 @@ class FinalReviewController extends Controller
 
         FinalReview::updateOrCreate([
             'professor_id' => Auth::id(),
-            'student_id' => $student->id
+            'paper_id' => $paper->id
         ], $attributes);
     }
 
-    public function delete(User $student)
+    public function delete(Paper $paper)
     {
-        $student->review()->delete();
+        $paper->review()->delete();
     }
 
-    public function download(User $student)
+    public function download(Paper $paper)
     {
-        abort_if(!$student->review, 422, "No review for this student");
+        abort_if(!$paper->review, 422, "No review for this student");
 
-        return PDF::loadView('pdf.review', compact('student'))->download();
+        $paper->load('review', 'student', 'examSession');
+
+        return PDF::loadView('pdf.review', compact('paper'))->download();
     }
 
-    public function get(User $student)
+    public function get(Paper $paper)
     {
-        return $student->review;
+        return $paper->review;
     }
 }

@@ -16,6 +16,8 @@ class CreateExamSessionsTable extends Migration
         Schema::create('exam_sessions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
+            $table->string('presentation_name');
+            $table->string('department');
             $table->timestamps();
         });
     }

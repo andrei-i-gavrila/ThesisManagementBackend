@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ExamSession;
+use App\Models\Paper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,10 +36,10 @@ class RandomAssignationJob implements ShouldQueue
     public function handle()
     {
         $committees = $this->examSession->committees;
-        $studentsGroups = $this->examSession->students->shuffle()->split($committees->count());
+        $paperGroups = $this->examSession->papers->pluck('id')->shuffle()->split($committees->count());
 
-        $committees->zip($studentsGroups)->each(function ($pair) {
-            $pair[0]->assignedStudents()->sync($pair[1]);
+        $committees->zip($paperGroups)->each(function ($pair) {
+            Paper::query()->whereIn('id', $pair[1])->update(['committee_id' => $pair[0]->id]);
         });
     }
 }

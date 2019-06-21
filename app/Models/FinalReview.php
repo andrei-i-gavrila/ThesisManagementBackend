@@ -8,12 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * App\Models\FinalReview
  *
- * @property-read \App\Models\User $professor
- * @property-read \App\Models\User $student
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview query()
- * @mixin \Eloquent
  * @property int $id
  * @property int $overall
  * @property int $grade_recommendation
@@ -28,9 +22,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $app_quality
  * @property string|null $observations
  * @property int $professor_id
- * @property int $student_id
+ * @property int $paper_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Paper $paper
+ * @property-read \App\Models\User $professor
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereAppComplexity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereAppQuality($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereCreatedAt($value)
@@ -41,23 +40,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereObservations($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereOriginality($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereOverall($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview wherePaperId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereProfessorId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereReferences($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereResultAnalysis($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereResultPresentation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereStructure($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereStudentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereUpdatedAt($value)
- * @property int $exam_session_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FinalReview whereExamSessionId($value)
+ * @mixin \Eloquent
  */
 class FinalReview extends Model
 {
     protected $guarded = [];
 
-    public function student(): BelongsTo
+    public function paper(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(Paper::class, 'paper_id');
     }
 
     public function professor(): BelongsTo

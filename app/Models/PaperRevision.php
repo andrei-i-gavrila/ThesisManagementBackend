@@ -17,21 +17,21 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $filepath
  * @property int $paper_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|Comment[] $comments
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
  * @property-read mixed $filename
- * @property-read Paper $paper
- * @method static Builder|PaperRevision newModelQuery()
- * @method static Builder|PaperRevision newQuery()
- * @method static Builder|PaperRevision query()
- * @method static Builder|PaperRevision whereCreatedAt($value)
- * @method static Builder|PaperRevision whereFilepath($value)
- * @method static Builder|PaperRevision whereId($value)
- * @method static Builder|PaperRevision whereName($value)
- * @method static Builder|PaperRevision wherePaperId($value)
- * @method static Builder|PaperRevision whereUpdatedAt($value)
- * @mixin Eloquent
+ * @property-read \App\Models\Paper $paper
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereFilepath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision wherePaperId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class PaperRevision extends Model
 {

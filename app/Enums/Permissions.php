@@ -20,6 +20,7 @@ interface Permissions
     const SEE_COMMITTEES = "See committees";
 
     const MANAGE_GRADING_SCHEMES = "Manage grading schemes";
+    const MANAGE_COMMITTEES = "Manage committees";
 
     const GRADE = "Grade";
 

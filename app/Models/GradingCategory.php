@@ -15,28 +15,28 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $name
- * @property string $description
+ * @property string|null $description
  * @property float $points
+ * @property int $order
  * @property int|null $parent_category_id
  * @property int $exam_session_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|GradingCategory[] $subcategories
- * @method static Builder|GradingCategory newModelQuery()
- * @method static Builder|GradingCategory newQuery()
- * @method static Builder|GradingCategory query()
- * @method static Builder|GradingCategory whereCreatedAt($value)
- * @method static Builder|GradingCategory whereDescription($value)
- * @method static Builder|GradingCategory whereExamSessionId($value)
- * @method static Builder|GradingCategory whereId($value)
- * @method static Builder|GradingCategory whereName($value)
- * @method static Builder|GradingCategory whereParentCategoryId($value)
- * @method static Builder|GradingCategory wherePoints($value)
- * @method static Builder|GradingCategory whereUpdatedAt($value)
- * @mixin Eloquent
- * @property int $order
- * @method static Builder|GradingCategory whereOrder($value)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\ExamSession $examSession
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\GradingCategory[] $subcategories
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereExamSessionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereParentCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory wherePoints($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GradingCategory whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class GradingCategory extends Model
 {

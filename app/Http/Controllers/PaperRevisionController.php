@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamSession;
 use App\Models\Paper;
 use App\Models\PaperRevision;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ class PaperRevisionController extends Controller
      * @return false|Model
      * @throws ValidationException
      */
-    public function create(Request $request)
+    public function create(Request $request, Paper $paper)
     {
         $this->validate($request, [
             'paper' => 'file|mimes:pdf|required',
@@ -26,8 +27,6 @@ class PaperRevisionController extends Controller
         ]);
 
         $studentEmail = Auth::user()->email;
-
-        $paper = Auth::user()->paper;
 
         $revisionName = $request->input('name') ?? 'Revision' . $paper->revisions()->count();
 
