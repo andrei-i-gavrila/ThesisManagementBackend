@@ -34,11 +34,10 @@ class LiveGradingController extends Controller
 
     public function grades(Paper $paper)
     {
-        $keyedGrades = $paper->keyed_grades;
-
         /** @var Collection $keyedGrades */
-        if ($keyedGrades->isEmpty()) {
-            $profIds = collect([$paper->committee->leader_id, $paper->committee->member1_id, $paper->committee->member2_id]);
+        $count = GradingCategory::whereExamSessionId($paper->exam_session_id)->count();
+        if ($paper->grades()->count() < 3 * $count) {
+            $profIds = collect([$paper->committee->leader_id, $paper->committee->member1_id, $paper->committee->member2_id])->filter();
             $categoryIds = GradingCategory::whereExamSessionId($paper->exam_session_id)->pluck('id');
 
             Grade::insert($profIds->crossJoin($categoryIds, [$paper->id])->transform(function($item) {

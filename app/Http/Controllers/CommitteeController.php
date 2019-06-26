@@ -46,11 +46,11 @@ class CommitteeController extends Controller
             throw new UnprocessableEntityHttpException('Duplicate professor assignments');
         }
 
-        $newOnes = collect($idFields)->mapWithKeys(function ($idField) {
-            return [$idField, User::find($idField)];
-        });
+        $newOnes = collect($idFields)->mapWithKeys(function ($idField) use ($request) {
+            return [$idField => User::find($request[$idField])];
+        })->filter();
 
-        if ($newOnes->some(function (User $user) {
+        if ($newOnes->some(function ($user) {
             return !$user->hasRole(Roles::PROFESSOR);
         })) {
             throw new UnprocessableEntityHttpException('Only profs can be evaluators');
@@ -59,23 +59,27 @@ class CommitteeController extends Controller
         $evalRole = Role::findByName(Roles::EVALUATOR);
 
         if ($committee->leader_id != $ids['leader_id']) {
-            $committee->leader->removeRole($evalRole);
+            if ($committee->leader_id)
+                $committee->leader->removeRole($evalRole);
             $newOnes['leader_id']->assignRole($evalRole);
         }
 
         if ($committee->member1_id != $ids['member1_id']) {
-            $committee->member1->removeRole($evalRole);
+            if ($committee->member1_id)
+                $committee->member1->removeRole($evalRole);
             $newOnes['member1_id']->assignRole($evalRole);
         }
 
         if ($committee->member2_id != $ids['member2_id']) {
-            $committee->member2->removeRole($evalRole);
+            if ($committee->member2_id)
+                $committee->member2->removeRole($evalRole);
             $newOnes['member2_id']->assignRole($evalRole);
         }
 
         $secretaryRole = Role::findByName(Roles::SECRETARY);
         if ($committee->secretary_id != $ids['secretary_id']) {
-            $committee->secretary->removeRole($secretaryRole);
+            if ($committee->secretary_id)
+                $committee->secretary->removeRole($secretaryRole);
             $newOnes['secretary_id']->assignRole($secretaryRole);
         }
 
@@ -92,7 +96,7 @@ class CommitteeController extends Controller
         $committees = $examSession->load(['committees', 'committees.leader', 'committees.secretary', 'committees.assignedPapers.student:users.id,users.name,email'])->committees->toArray();
 
         foreach ($committees as &$committee) {
-            usort($committee['assigned_papers'], function($ap1, $ap2) {
+            usort($committee['assigned_papers'], function ($ap1, $ap2) {
                 return strcmp($ap1['student']['name'], $ap2['student']['name']);
             });
         }
