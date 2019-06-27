@@ -2,27 +2,24 @@
 
 namespace App\Jobs;
 
-use App\Models\Paper;
+use App\Models\PaperRevision;
 use App\Models\User;
 use App\Services\TFIDF;
 use App\Services\WikipediaKeywordScraper;
+use DonatelloZa\RakePlus\RakePlus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
-use Smalot\PdfParser\Parser;
+use Log;
 use StopWordFactory;
 use TextAnalysis\Collections\DocumentArrayCollection;
 use TextAnalysis\Documents\TokensDocument;
-use TextAnalysis\Filters\CharFilter;
 use TextAnalysis\Filters\LambdaFilter;
 use TextAnalysis\Filters\LowerCaseFilter;
-use TextAnalysis\Filters\NumbersFilter;
-use TextAnalysis\Filters\PunctuationFilter;
-use TextAnalysis\Filters\QuotesFilter;
 use TextAnalysis\Filters\StopWordsFilter;
 use TextAnalysis\Stemmers\PorterStemmer;
 use TextAnalysis\Tokenizers\GeneralTokenizer;
@@ -47,6 +44,12 @@ class EvaluatorKeywordExtractor implements ShouldQueue
      */
     private $tokenizer;
 
+
+    /**
+     * @var Collection
+     */
+    private $paperDocuments;
+
     /**
      * Create a new job instance.
      *
@@ -57,45 +60,6 @@ class EvaluatorKeywordExtractor implements ShouldQueue
         ini_set('max_execution_time', 300);
         $this->tokenizer = new GeneralTokenizer();
         $this->scraper = new WikipediaKeywordScraper();
-        $this->filters = [
-            new LowerCaseFilter(),
-            new QuotesFilter(),
-            new CharFilter(),
-            new NumbersFilter(),
-            new PunctuationFilter(),
-            new StopWordsFilter(StopWordFactory::get('stop-words_english_6_en.txt'))
-        ];
-        $this->stemmer = new PorterStemmer();
-    }
-
-
-    public function transformDocument(TokensDocument $document)
-    {
-        foreach ($this->filters as $filter) {
-            $document->applyTransformation($filter);
-        }
-        $document->applyStemmer($this->stemmer);
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $domainsByProffessor = User::professor()->with('professorDetails')->get()->mapWithKeys(function (User $professor) {
-            return [$professor->email => collect(explode(', ', $professor->professorDetails->interest_domains))];
-        });
-        $documentsToScrape = $domainsByProffessor->flatten()->filter()->unique();
-        $documents = $documentsToScrape->mapWithKeys(function ($domain) {
-            return [$domain => $this->scraper->getText($domain)->transform(function ($text) {
-                return new TokensDocument($this->tokenizer->tokenize($text));
-            })];
-
-        });
-
-        $collection = new DocumentArrayCollection($documents->flatten()->all());
 
         /** @noinspection PhpParamsInspection */
         $charFilter = new LambdaFilter(function ($word) {
@@ -107,49 +71,71 @@ class EvaluatorKeywordExtractor implements ShouldQueue
             return preg_replace('/[^a-z]/', '', $word);
         });
 
-        $transformations = [
+        $stopWords = StopWordFactory::get('stop-words_english_6_en.txt');
+        $stopWords[] = 'press';
+        $stopWords[] = 'university';
+        $stopWords[] = 'isbn';
+        $this->filters = [
             new LowerCaseFilter(),
             $wordsFilter,
             $charFilter,
-            new StopWordsFilter(StopWordFactory::get('stop-words_english_6_en.txt')),
+            new StopWordsFilter($stopWords),
         ];
-        $stemmers = [
-            new PorterStemmer(),
-        ];
-        $collection->applyTransformations($transformations);
-        $collection->applyStemmers($stemmers);
 
-        $tfIdf = new TFIDF($collection);
+        $this->stemmer = new PorterStemmer();
 
-        $professorKeywords = $domainsByProffessor->map(function (Collection $domains) use ($documents, $tfIdf) {
-            return $domains->filter()
-                ->map(function ($domain) use ($documents) {
-                    return $documents[$domain];
-                })
-                ->flatten()
-                ->transform(function (TokensDocument $document) {
-                    return freq_dist($document->getDocumentData())->getKeyValuesByWeight();
+        $this->paperDocuments = collect();
+    }
 
-                })
-                ->transform(function ($freq) {
-                    return collect($freq)->transform(function ($score, $keyword) {
-                        return [$keyword, $score];
-                    })->values();
-                })
-                ->flatten(1)->mapToGroups(function ($item) {
-                    return [$item[0] => $item[1]];
-                })
-                ->transform(function ($scores) {
-                    return $scores->sum();
-                })
-                ->transform(function ($score, $keyword) use ($tfIdf) {
-                    return $score * $tfIdf->getIdf($keyword);
-                })
-                ->sortByDesc(function ($item) {
-                    return $item;
-                });
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $domainDocuments = [];
+
+        $domainsByProfessor = User::professor()->with('professorDetails')->get()->mapWithKeys(function (User $professor) {
+            return [$professor->email => collect(explode(', ', $professor->professorDetails->interest_domains))];
         });
+        $rake = new RakePlus();
+        foreach ($domainsByProfessor->flatten()->filter()->unique() as $domainToScrape) {
+            $domainDocuments[$domainToScrape] = [];
+            foreach ($this->scraper->getTexts($domainToScrape) as $text) {
+                //                $domainDocuments[$domainToScrape][] = new TokensDocument(ngrams($this->transformDocument(new TokensDocument($this->tokenizer->tokenize($text)))->getDocumentData(), 3, ' '));
+                //                $domainDocuments[$domainToScrape][] = $this->transformDocument(new TokensDocument($this->tokenizer->tokenize($text)));
+                $domainDocuments[$domainToScrape][] = $rake->extract($text)->scores();
+            }
+        }
 
+        $tfIdf = (new TFIDF(Arr::flatten($domainDocuments, 1)))->getIdf();
+        $profKeywords = [];
+        foreach ($domainsByProfessor as $professor => $domains) {
+            $profKeywords[$professor] = [];
+            foreach ($domains as $domain) {
+                foreach ($domainDocuments[$domain] as $document) {
+
+                    //                    $freqs = freq_dist($document)->getKeyValuesByFrequency();
+                    foreach ($document as $word => $freq) {
+                        if ($tfIdf[$word] == 0) continue;
+                        if (!isset($profKeywords[$professor][$word])) {
+                            $profKeywords[$professor][$word] = 0;
+                        }
+                        $profKeywords[$professor][$word] += $freq / count($document) * $tfIdf[$word];
+                    }
+                }
+            }
+            arsort($profKeywords[$professor]);
+        }
+
+
+        dd($profKeywords);
+        //        dd(array_map(function($arr) {
+        //            return array_sum($arr);
+        //        }, $profKeywords));
+
+        return;
         $professorKeywords->transform(function (Collection $scores, $prof) {
             if ($scores->first() == 0) {
                 return $scores;
@@ -164,18 +150,24 @@ class EvaluatorKeywordExtractor implements ShouldQueue
 
         $parser = new Parser();
 
-        $paperDocs = Paper::get()->keyBy('name')->transform(function (Paper $paper) use ($parser) {
-            return $parser->parseContent(Storage::get($paper->filepath))->getText();
-        })->transform(function ($text, $name) {
-            return new TokensDocument($this->tokenizer->tokenize($text), $name);
+        $paperDocs = PaperRevision::get()->keyBy('name')->transform(function (PaperRevision $paper, $name) use ($parser, $transformations, $stemmer) {
+            $before = memory_get_usage();
+            $tokensDocument = new TokensDocument($this->tokenizer->tokenize($parser->parseContent(Storage::get($paper->filepath))->getText()), $name);
+            foreach ($transformations as $transformation) {
+                $tokensDocument->applyTransformation($transformation);
+            }
+
+            $tokensDocument->applyStemmer($stemmer);
+
+
+            Log::info(memory_get_usage() - $before);
+            return $tokensDocument;
         });
 
         $paperDocCollection = new DocumentArrayCollection($paperDocs->all());
-        $paperDocCollection->applyTransformations($transformations);
-        $paperDocCollection->applyStemmers($stemmers);
 
         $papersTfIdf = new TFIDF($paperDocCollection);
-        $paperDocs->map(function (TokensDocument $paperDoc) use ($papersTfIdf) {
+        $paperDocs->transform(function (TokensDocument $paperDoc) use ($papersTfIdf) {
             return collect(freq_dist($paperDoc->getDocumentData())->getKeyValuesByWeight())->transform(function ($score, $keyword) use ($papersTfIdf) {
                 return $score * $papersTfIdf->getIdf($keyword);
             });
@@ -214,5 +206,14 @@ class EvaluatorKeywordExtractor implements ShouldQueue
                 return [$a, $b];
             });
         })->take(1)->dd();
+    }
+
+    public function transformDocument(TokensDocument $document)
+    {
+        foreach ($this->filters as $filter) {
+            $document->applyTransformation($filter);
+        }
+        $document->applyStemmer($this->stemmer);
+        return $document;
     }
 }

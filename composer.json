@@ -16,6 +16,7 @@
         "barryvdh/laravel-ide-helper": "^2.6",
         "curl/curl": "^2.2",
         "doctrine/dbal": "^2.9",
+        "donatello-za/rake-php-plus": "^1.0",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "5.8.*",

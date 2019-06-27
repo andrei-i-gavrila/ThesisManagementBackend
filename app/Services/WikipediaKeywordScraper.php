@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Log;
 use StopWordFactory;
 use TextAnalysis\Documents\TokensDocument;
 use TextAnalysis\Filters\StopWordsFilter;
@@ -37,7 +38,7 @@ class WikipediaKeywordScraper
         $this->filter = new StopWordsFilter(StopWordFactory::get("stop-words_english_6_en.txt"));
     }
 
-    public function getText($query)
+    public function getTexts($query)
     {
         $title = $this->getPageTitle($query);
 
@@ -47,7 +48,7 @@ class WikipediaKeywordScraper
             if (strlen($textPage) > 250) {
                 return collect([$textPage]);
             } else {
-                \Log::info("skipped short page");
+                Log::info("skipped short page");
             }
         }
 

@@ -53,9 +53,9 @@ class ProfessorImporter implements ShouldQueue
         ];
 
         foreach ($matches as $match) {
-//            if (empty($match[4])) {
-//                continue;
-//            }
+            if (empty($match[4])) {
+                continue;
+            }
 
 
             $email = $match[2] . "@" . $match[3];
