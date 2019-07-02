@@ -26,7 +26,6 @@ class ProfessorsController extends Controller
         $professor->save();
 
         dispatch_now(new ProfessorDetailImporter($professor));
-        broadcast(new ProfessorUpdated($professor->load('professorDetails')));
     }
 
     /**
