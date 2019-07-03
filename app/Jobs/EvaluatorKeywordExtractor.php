@@ -21,6 +21,7 @@ use TextAnalysis\Documents\TokensDocument;
 use TextAnalysis\Filters\LambdaFilter;
 use TextAnalysis\Filters\LowerCaseFilter;
 use TextAnalysis\Filters\StopWordsFilter;
+use TextAnalysis\Filters\TrimFilter;
 use TextAnalysis\Stemmers\PorterStemmer;
 use TextAnalysis\Tokenizers\GeneralTokenizer;
 
@@ -57,7 +58,6 @@ class EvaluatorKeywordExtractor implements ShouldQueue
      */
     public function __construct()
     {
-        ini_set('max_execution_time', 300);
         $this->tokenizer = new GeneralTokenizer();
         $this->scraper = new WikipediaKeywordScraper();
 
@@ -72,9 +72,6 @@ class EvaluatorKeywordExtractor implements ShouldQueue
         });
 
         $stopWords = StopWordFactory::get('stop-words_english_6_en.txt');
-        $stopWords[] = 'press';
-        $stopWords[] = 'university';
-        $stopWords[] = 'isbn';
         $this->filters = [
             new LowerCaseFilter(),
             $wordsFilter,

@@ -30,6 +30,7 @@ Route::middleware(["auth"])->group(function () {
         Route::get("/{examSession}/committee", "CommitteeController@get");
         Route::post("/{examSession}/randomOrder", "ExamSessionController@randomAssignment");
         Route::post("/{examSession}/lexicalOrder", "ExamSessionController@lexicalOrderAssignment");
+        Route::post("/{examSession}/calculateScores", "ExamSessionController@calculateScores");
     });
 
 

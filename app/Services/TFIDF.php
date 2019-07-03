@@ -2,46 +2,34 @@
 
 namespace App\Services;
 
-/**
- * An implementation of the TF Idf Algorithm
- * @author yooper (yooper)
- */
 class TFIDF
 {
-    /**
-     * Default mode of weighting uses frequency
-     */
-    const FREQUENCY_MODE = 1;
-    const BOOLEAN_MODE = 2;
-    const LOGARITHMIC_MODE = 3;
-    const AUGMENTED_MODE = 4;
-
 
     /**
      * Store the idf for each token
      * @var array of floats
      */
-    protected $idf = array();
+    protected $idf = [];
 
-    public function __construct($documents)
-    {
-        $this->buildIndex($documents);
-    }
+    private $bestScore = 0;
 
-    protected function buildIndex($documents)
+    public function indexDocument($keywords)
     {
-        foreach ($documents as $document) {
-            foreach ($document as $key => $freq) {
-                if (!isset($this->idf[$key])) {
-                    $this->idf[$key] = 1;
-                }
-                $this->idf[$key]++;
+        foreach ($keywords as $word => $freq) {
+            if (!isset($this->idf[$word])) {
+                $this->idf[$word] = 1;
+            }
+            $this->idf[$word]++;
+            if ($this->idf[$word] > $this->bestScore) {
+                $this->bestScore = $this->idf[$word];
             }
         }
+    }
 
-        $count = count($documents);
-        foreach ($this->idf as $key => &$value) {
-            $value = log($count / $value);
+    public function calculateIdf()
+    {
+        foreach ($this->idf as $word => &$score) {
+            $score = log($this->bestScore / $score);
         }
     }
 
@@ -53,6 +41,17 @@ class TFIDF
         return $this->idf[$token];
     }
 
+    public function getTfIdfs($tokenScores)
+    {
+        $tfIdfsScores = [];
 
+        $bestTokenScore = current($tokenScores);
+
+        foreach ($tokenScores as $token => $score) {
+            $tfScore = 0.5 + 0.5 * $score / $bestTokenScore;
+            $tfIdfsScores[$token] = $tfScore * $this->idf[$token];
+        }
+        return $tfIdfsScores;
+    }
 }
 

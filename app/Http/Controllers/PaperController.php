@@ -24,6 +24,7 @@ class PaperController extends Controller
         $attributes = $this->validate($request, [
             'name' => 'string|required',
             'link' => 'nullable|string',
+            'language' => 'nullable|string'
         ]);
 
         Paper::updateOrCreate([

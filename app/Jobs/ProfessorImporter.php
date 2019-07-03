@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Enums\Roles;
 use App\Models\ProfessorDetails;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -32,12 +31,7 @@ class ProfessorImporter implements ShouldQueue
      */
     public function handle()
     {
-        $pageData = file_get_contents("http://www.cs.ubbcluj.ro/about-the-faculty/departments/department-of-computer-science/");
-        $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?:\s?(.*?)\[at\](.*?)<(?:.*\n){2,3}.*?interest:\s?(.*?)</m';
-
-        preg_match_all($re, $pageData, $matches, PREG_SET_ORDER);
-
-        $allowedMails = [
+        $allowedMails = collect([
             "hfpop@cs.ubbcluj.ro",
             "dan@cs.ubbcluj.ro",
             "rgaceanu@cs.ubbcluj.ro",
@@ -50,24 +44,14 @@ class ProfessorImporter implements ShouldQueue
             "vniculescu@cs.ubbcluj.ro",
             "vancea@cs.ubbcluj.ro",
             "mihoct@cs.ubbcluj.ro",
-        ];
-
-        foreach ($matches as $match) {
-            if (empty($match[4])) {
-                continue;
-            }
+        ]);
 
 
-            $email = $match[2] . "@" . $match[3];
-            //            if (!in_array($email, $allowedMails)) {
-            //                continue;
-            //            }
-            $professor = User::firstOrNew(['email' => $email])->assignRole(Roles::PROFESSOR);
-            $professor->save();
-            $professor->professorDetails()->save(new ProfessorDetails([
-                'image_url' => $match[1],
-                'interest_domains' => $match[4]
-            ]));
-        }
+        $allowedMails->each(function ($mail) {
+            $prof = User::firstOrCreate(['email' => $mail]);
+            dispatch_now(new ProfessorDetailImporter($prof));
+        });
+
+
     }
 }

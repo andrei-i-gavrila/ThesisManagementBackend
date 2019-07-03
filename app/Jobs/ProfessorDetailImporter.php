@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\ProfessorDetails;
+use App\Models\DomainOfInterest;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,6 +19,17 @@ class ProfessorDetailImporter implements ShouldQueue
      */
     private $professor;
 
+
+    private $urls = [
+        'ro' => 'http://www.cs.ubbcluj.ro/despre-facultate/structura/departamentul-de-informatica/',
+        'en' => 'http://www.cs.ubbcluj.ro/about-the-faculty/departments/department-of-computer-science/'
+    ];
+
+    private $regexIdentifier = [
+        'ro' => 'interes',
+        'en' => 'interest'
+    ];
+
     public function __construct(User $professor)
     {
         $this->professor = $professor;
@@ -26,9 +37,14 @@ class ProfessorDetailImporter implements ShouldQueue
 
     public function handle()
     {
-        $pageData = file_get_contents("http://www.cs.ubbcluj.ro/about-the-faculty/departments/department-of-computer-science/");
-        $emailRegex = str_replace(['@', '.'], ['\\[at\\]', '\\.'], $this->professor->email);
-        $re = '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?interest:\s?(.*?)</m';
+        $this->import('ro');
+        $this->import('en');
+    }
+
+    private function import($language)
+    {
+        $pageData = file_get_contents($this->urls[$language]);
+        $re = $this->makeRegex($this->professor->email, $language);
 
 
         Log::info($re);
@@ -39,13 +55,31 @@ class ProfessorDetailImporter implements ShouldQueue
             return;
         }
 
+        if (!$this->professor->image_url) {
+            $this->professor->update(['image_url' => $matches[1]]);
+        }
 
-        ProfessorDetails::updateOrCreate([
-            'professor_id' => $this->professor->id
-        ], [
-            'image_url' => $matches[1],
-            'interest_domains' => $matches[2]
-        ]);
+        $domains = collect(explode(', ', $matches[2]))->map(function ($name) use ($language) {
+            $name = $this->transformName($name);
+            return DomainOfInterest::firstOrCreate(compact('name', 'language'))->id;
+        });
+
+
+        $this->professor->domainsOfInterest()->syncWithoutDetaching($domains);
+
+    }
+
+    private function makeRegex($email, $language)
+    {
+        $emailRegex = str_replace(['@', '.'], ['\\[at\\]', '\\.'], $email);
+        return '/src=[\'"](.*?)[\'"](?:.*\n){2,3}.*?' . $emailRegex . '(?:.*\n){2,3}.*?' . $this->regexIdentifier[$language] . ':\s?(.*?)</m';
+
+
+    }
+
+    private function transformName($name)
+    {
+        return str_replace(['instruire', 'Instruire'], ['învățare', 'Învățare'], $name);
     }
 
 }

@@ -16,14 +16,13 @@ class DomainOfInterestController extends Controller
      */
     public function create(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string'
+        $attributes = $this->validate($request, [
+            'name' => 'required|string',
+            'language' => 'required|string'
         ]);
 
 
-        Auth::user()->domainsOfInterest()->save(DomainOfInterest::firstOrNew([
-            'name' => $request->name
-        ]));
+        Auth::user()->domainsOfInterest()->save(DomainOfInterest::firstOrNew($attributes));
     }
 
     public function get(User $user)

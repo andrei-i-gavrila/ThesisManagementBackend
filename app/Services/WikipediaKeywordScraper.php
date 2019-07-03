@@ -9,10 +9,6 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Log;
-use StopWordFactory;
-use TextAnalysis\Documents\TokensDocument;
-use TextAnalysis\Filters\StopWordsFilter;
-use TextAnalysis\Tokenizers\GeneralTokenizer;
 
 class WikipediaKeywordScraper
 {
@@ -23,28 +19,23 @@ class WikipediaKeywordScraper
      */
     private $client;
     /**
-     * @var GeneralTokenizer
+     * @var KeywordExtractorService
      */
-    private $tokenizer;
-    /**
-     * @var StopWordsFilter
-     */
-    private $filter;
+    private $keywordExtractorService;
 
-    public function __construct()
+    public function __construct(KeywordExtractorService $keywordExtractorService)
     {
         $this->client = new Client(['verify' => false]);
-        $this->tokenizer = new GeneralTokenizer();
-        $this->filter = new StopWordsFilter(StopWordFactory::get("stop-words_english_6_en.txt"));
+        $this->keywordExtractorService = $keywordExtractorService;
     }
 
-    public function getTexts($query)
+    public function getTexts($query, $language = 'en')
     {
-        $title = $this->getPageTitle($query);
+        $title = $this->getPageTitle($query, $language);
 
         if ($title) {
 
-            $textPage = $this->getTextPage($title);
+            $textPage = $this->getTextPage($title, $language);
             if (strlen($textPage) > 250) {
                 return collect([$textPage]);
             } else {
@@ -52,22 +43,22 @@ class WikipediaKeywordScraper
             }
         }
 
-        return $this->getQueriesToTry($query)
-                        ->transform(function ($query) {
-                            return $this->getPageTitle($query);
-                        })
-                        ->filter()
-                        ->transform(function ($title) {
-                            return $this->getTextPage($title);
-                        })
-                        ->filter(function ($text) {
-                            return strlen($text) > 250 && !Str::contains($text, "may refer to:\n");
-                        });
+        return $this->getQueriesToTry($query, $language)
+            ->transform(function ($query) use ($language) {
+                return $this->getPageTitle($query, $language);
+            })
+            ->filter()
+            ->transform(function ($title) use ($language) {
+                return $this->getTextPage($title, $language);
+            })
+            ->filter(function ($text) {
+                return strlen($text) > 250 && !Str::contains($text, "may refer to:\n");
+            });
     }
 
-    private function getPageTitle($query)
+    private function getPageTitle($query, $language)
     {
-        $opensearchUrl = $this->getOpensearchUrl($query);
+        $opensearchUrl = $this->getOpensearchUrl($query, $language);
 
         $contents = Cache::rememberForever($opensearchUrl, function () use ($opensearchUrl) {
             return $this->client->get($opensearchUrl)->getBody()->getContents();
@@ -76,15 +67,15 @@ class WikipediaKeywordScraper
         return json_decode($contents)[1][0] ?? null;
     }
 
-    private function getOpensearchUrl($query)
+    private function getOpensearchUrl($query, $language)
     {
         $query = urlencode($query);
-        return "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=$query";
+        return "https://$language.wikipedia.org/w/api.php?action=opensearch&format=json&search=$query";
     }
 
-    private function getTextPage($title)
+    private function getTextPage($title, $language)
     {
-        $textUrl = $this->getTextUrl($title);
+        $textUrl = $this->getTextUrl($title, $language);
 
         $contents = Cache::rememberForever($textUrl, function () use ($textUrl) {
             return $this->client->get($textUrl)->getBody()->getContents();
@@ -100,15 +91,15 @@ class WikipediaKeywordScraper
         }
     }
 
-    private function getTextUrl($title)
+    private function getTextUrl($title, $language)
     {
         $title = urlencode($title);
-        return "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&redirects=1&explaintext=1&exsectionformat=plain&titles=$title";
+        return "https://$language.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&redirects=1&explaintext=1&exsectionformat=plain&titles=$title";
     }
 
-    private function getQueriesToTry($query)
+    private function getQueriesToTry($query, $language)
     {
-        $tokens = (new TokensDocument(normalize_tokens($this->tokenizer->tokenize($query))))->applyTransformation($this->filter);
-        return collect(array_merge(ngrams($tokens->getDocumentData()), $tokens->getDocumentData()));
+        $tokens = $this->keywordExtractorService->extract($query, $language);
+        return collect(array_merge(ngrams($tokens), $tokens));
     }
 }

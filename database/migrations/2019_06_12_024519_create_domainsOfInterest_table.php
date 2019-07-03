@@ -16,6 +16,7 @@ class CreateDomainsOfInterestTable extends Migration
         Schema::create('domain_of_interests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('language');
             $table->timestamps();
         });
     }

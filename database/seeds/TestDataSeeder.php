@@ -27,6 +27,7 @@ class TestDataSeeder extends Seeder
             'activated' => 1,
         ])->assignRole(Role::findOrCreate(Roles::SUPER_ADMIN));
 
+        return;
         $examSession = ExamSession::create(['name' => 'iulie-2019-engleza', 'presentation_name' => "Iulie 2019 Engleza", 'department' => 'Informatica Engleza']);
         $studentRole = Role::findOrCreate(Roles::STUDENT);
         $professorRole = Role::findOrCreate(Roles::PROFESSOR);

@@ -22,8 +22,10 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $language
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\DomainOfInterest whereLanguage($value)
  */
 class DomainOfInterest extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'language'];
 }

@@ -42,10 +42,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereStudentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $language
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereLanguage($value)
  */
 class Paper extends Model
 {
-    protected $fillable = ['name', 'student_id', 'link', 'exam_session_id', 'committee_id'];
+    protected $fillable = ['name', 'student_id', 'link', 'exam_session_id', 'committee_id', 'language'];
 
 
     public function student(): BelongsTo
@@ -66,7 +68,7 @@ class Paper extends Model
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(PaperRevision::class);
+        return $this->hasMany(PaperRevision::class)->latest();
     }
 
     public function finalRevision(): HasOne

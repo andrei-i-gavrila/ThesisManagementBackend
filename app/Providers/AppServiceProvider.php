@@ -19,7 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
     }
 
     /**
@@ -34,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
                 TokenGuard::TOKEN_FIELD => $authToken->token
             ]);
         });
+
 
         DB::listen(function (QueryExecuted $query) {
             Log::info($query->sql);

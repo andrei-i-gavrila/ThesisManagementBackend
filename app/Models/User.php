@@ -31,7 +31,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Paper[] $paper
  * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Permission[] $permissions
- * @property-read \App\Models\ProfessorDetails $professorDetails
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FinalReview[] $review
  * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $students
@@ -49,6 +48,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereImageUrl($value)
  */
 class User extends Authenticatable
 {
@@ -57,7 +58,7 @@ class User extends Authenticatable
     use UserStudent;
 
     protected $guard_name = 'api';
-    protected $fillable = ['email', 'name', 'activated'];
+    protected $fillable = ['email', 'name', 'activated', 'image_url'];
     protected $hidden = ['password'];
 
     public function getNameAttribute($name)

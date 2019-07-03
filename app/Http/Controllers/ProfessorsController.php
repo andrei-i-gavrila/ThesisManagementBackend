@@ -36,7 +36,7 @@ class ProfessorsController extends Controller
     public function get(User $user)
     {
         $this->checkIsProfessor($user);
-        return $user->load('professorDetails');
+        return $user->load('domainsOfInterest');
     }
 
     /**

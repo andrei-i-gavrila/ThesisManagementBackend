@@ -28,6 +28,6 @@ class InitDevEnv extends Command
         Artisan::call('migrate:fresh', ['--seed' => true]);
         Artisan::call('roles:update');
         Artisan::call('ide-helper:models', ["-W" => true]);
-        dispatch_now(new RandomAssignationJob(ExamSession::first()));
+//        dispatch_now(new RandomAssignationJob(ExamSession::first()));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\LexicalOrderAssignationJob;
 use App\Jobs\RandomAssignationJob;
 use App\Models\ExamSession;
+use App\Services\MatchScoreCalculator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -48,6 +49,11 @@ class ExamSessionController extends Controller
     public function randomAssignment(ExamSession $examSession)
     {
         dispatch_now(new RandomAssignationJob($examSession));
+    }
+
+    public function calculateScores(ExamSession $examSession, MatchScoreCalculator $matchScoreCalculator)
+    {
+        $matchScoreCalculator->calculate($examSession);
     }
 
     public function lexicalOrderAssignment(ExamSession $examSession)
