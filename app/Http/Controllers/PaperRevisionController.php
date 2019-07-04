@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paper;
+use App\Models\PaperMetrics;
 use App\Models\PaperRevision;
 use App\Services\KeywordExtractorService;
 use App\Services\PdfReaderService;
@@ -21,6 +22,7 @@ class PaperRevisionController extends Controller
      * @param KeywordExtractorService $extractorService
      * @return false|Model
      * @throws ValidationException
+     * @throws \Exception
      */
     public function create(Request $request, Paper $paper, PdfReaderService $readerService, KeywordExtractorService $extractorService)
     {
@@ -45,7 +47,7 @@ class PaperRevisionController extends Controller
         }
 
 
-        Storage::put($filepath . '.keywords', implode("\n", $extractorService->extract($text, $paper->language)));
+        Storage::put($filepath . '.keywords', implode("\n", $extractorService->extract($text->getText(), $paper->language)));
 
 
         $revision = $paper->revisions()->save(new PaperRevision([
@@ -58,7 +60,15 @@ class PaperRevisionController extends Controller
             Storage::delete($filepath . '.keywords');
         }
 
-        return $revision;
+
+
+        $char_count = strlen($text->getText());
+        preg_match_all('/\b\w+\b/', $text->getText(), $matches);
+        $word_count = count($matches[0]);
+        $page_count = count($text->getPages());
+
+        $revision->metrics()->save(new PaperMetrics(compact('char_count', 'page_count', 'word_count')));
+        return $revision->fresh();
     }
 
     public function download(PaperRevision $paperRevision)

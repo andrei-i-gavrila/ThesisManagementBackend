@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
 
 /**
  * App\Models\PaperRevision
@@ -32,12 +29,14 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision wherePaperId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PaperRevision whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\PaperMetrics $metrics
  */
 class PaperRevision extends Model
 {
     protected $fillable = ['filepath', 'name', 'paper_id'];
 
     protected $appends = ['filename'];
+    protected $with = ['metrics'];
 
 
     public function paper()
@@ -54,5 +53,10 @@ class PaperRevision extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function metrics(): HasOne
+    {
+        return $this->hasOne(PaperMetrics::class, 'paper_revision_id');
     }
 }

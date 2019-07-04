@@ -24,7 +24,7 @@ class StudentsController extends Controller
         $this->validate($request, ['email' => 'required|email']);
         $student = User::firstOrCreate(['email' => $request->email])->assignRole(Roles::STUDENT);
 
-        AuUseUth::user()->students()->attach($student);
+        Auth::user()->students()->attach($student);
     }
 
     /**

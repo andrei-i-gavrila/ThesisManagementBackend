@@ -21,10 +21,21 @@ class PdfReaderService
         $this->parser = new Parser();
     }
 
-    public function parse($file)
+    public function parseText($file)
     {
         try {
             return $this->parser->parseFile($file)->getText();
+        } catch (Exception $e) {
+            Log::error($e);
+            return false;
+        }
+    }
+
+
+    public function parse($file)
+    {
+        try {
+            return $this->parser->parseFile($file);
         } catch (Exception $e) {
             Log::error($e);
             return false;

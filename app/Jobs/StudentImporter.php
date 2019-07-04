@@ -73,7 +73,7 @@ class StudentImporter implements ShouldQueue
                     'committee_id' => $i - 3
                 ]);
 
-//                $text = $this->readerService->parse(\Storage::path($basePath . $paperPath));
+//                $text = $this->readerService->parseText(\Storage::path($basePath . $paperPath));
 //                if (!$text) {
 //                    \Log::error('cannot read file ' . $paperPath);
 //                    return true;

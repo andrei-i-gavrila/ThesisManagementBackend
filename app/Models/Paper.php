@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\GradeCalculator;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Paper
@@ -94,9 +92,26 @@ class Paper extends Model
         return $this->hasMany(Grade::class);
     }
 
-    public function getKeyedGradesAttribute() {
+    public function getKeyedGradesAttribute()
+    {
         return $this->grades->groupBy('professor_id')->map(function ($gradesFromProf) {
             return $gradesFromProf->keyBy->category_id;
         });
+    }
+
+    public function getKeyedAveragesAttribute()
+    {
+        $averages = [];
+
+        $gradingCategories = $this->examSession->gradingCategories;
+        foreach (['leader_id', 'member1_id', 'member2_id'] as $idField) {
+            $grades = $this->grades->filter(function (Grade $grade) use ($idField) {
+                return $grade->professor_id == $this->committee[$idField];
+            })->keyBy->category_id;
+
+            $averages[$idField] = GradeCalculator::calculateAverage($gradingCategories, $grades);
+        }
+
+        return $averages;
     }
 }
