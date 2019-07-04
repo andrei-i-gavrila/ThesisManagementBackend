@@ -80,8 +80,8 @@ class MatchScoreCalculator
         });
 
         $papers->each(function (Paper $paper) use ($tfProfessors, $paperScores) {
-            $tfProfessors->each(function($professor, $profId) use ($paperScores, $paper) {
-                $matchScore = $professor[$paper->language]->map(function($scores) use ($paperScores, $paper) {
+            $tfProfessors->each(function ($professor, $profId) use ($paperScores, $paper) {
+                $matchScore = $professor[$paper->language]->map(function ($scores) use ($paperScores, $paper) {
                     return $this->cosineSimilarity($scores, $paperScores[$paper->id]);
                 })->sum();
 
@@ -90,27 +90,6 @@ class MatchScoreCalculator
             });
         });
 
-    }
-
-    private function cosineSimilarity($scoresA, $scoresB)
-    {
-        $sumProd = 0;
-        $aSq = 0;
-        $bSq = 0;
-
-        foreach ($scoresA as $word => $score) {
-            if (isset($scoresB[$word])) {
-                $sumProd += $score * $scoresB[$word];
-            }
-            $aSq += $score * $score;
-        }
-
-        foreach ($scoresB as $word => $score) {
-            $bSq += $score * $score;
-        }
-
-
-        return $sumProd / sqrt($aSq * $bSq);
     }
 
     private function loadProfessorsInCommittees(ExamSession $examSession): Collection
@@ -135,14 +114,39 @@ class MatchScoreCalculator
 
     private function loadStudents(ExamSession $examSession): Collection
     {
-        return $examSession->papers->load('finalRevision')->filter(function(Paper $paper) {
+        return $examSession->papers->load('finalRevision')->filter(function (Paper $paper) {
             return $paper->finalRevision != null;
         });
     }
 
     private function loadKeywordsFromTxtFile(PaperRevision $paperRevision)
     {
-        return freq_dist(explode("\n", \Storage::get($paperRevision->filepath . '.keywords')))->getKeyValuesByFrequency();
+        try {
+            return freq_dist(explode("\n", \Storage::get($paperRevision->filepath . '.keywords')))->getKeyValuesByFrequency();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    private function cosineSimilarity($scoresA, $scoresB)
+    {
+        $sumProd = 0;
+        $aSq = 0;
+        $bSq = 0;
+
+        foreach ($scoresA as $word => $score) {
+            if (isset($scoresB[$word])) {
+                $sumProd += $score * $scoresB[$word];
+            }
+            $aSq += $score * $score;
+        }
+
+        foreach ($scoresB as $word => $score) {
+            $bSq += $score * $score;
+        }
+
+
+        return $sumProd / sqrt($aSq * $bSq);
     }
 
 }

@@ -49,8 +49,8 @@ class StudentImporter implements ShouldQueue
      */
     public function handle()
     {
-        for ($i = 5; $i < 9; $i++) {
-            $basePath = 'papers\\bulk\\comisia' . $i . '\\';
+        for ($i = 1; $i <= 4; $i++) {
+            $basePath = 'papers\\bulk\\ro\\comisia' . $i . '\\';
             $comisieFile = 'comisia' . $i . '.txt';
             $students = collect(explode("\n", \Storage::get($basePath . $comisieFile)))->filter()->mapWithKeys(function ($line) {
                 $tmp = explode(",", $line);
@@ -59,32 +59,38 @@ class StudentImporter implements ShouldQueue
 
 
             $students->each(function ($paperPath, $name) use ($i, $basePath) {
-                if (!\Storage::exists($basePath . $paperPath . '.keywords')) {
+                $text = $this->readerService->parseText(\Storage::path($basePath . $paperPath));
+                if (!$text) {
+                    \Log::error('cannot read file ' . $paperPath);
                     return true;
                 }
+
                 $student = User::query()->firstOrCreate([
                     'email' => $name . '@scs.ubbcluj.ro',
                     'name' => Str::title(Str::replaceFirst('_', ' ', $name)),
                 ])->assignRole(Roles::STUDENT);
 
+
+
+                $paperLanguage = 'ro';
+                if (preg_match('/contents/i', $text)) {
+                    $paperLanguage = 'en';
+                }
+
+
+                \Storage::put($basePath . $paperPath . '.keywords', implode("\n", $this->extractorService->extract($text, $paperLanguage)));
+
                 $paper = $student->paper()->create([
-                    'language' => 'en',
+                    'language' => $paperLanguage,
                     'exam_session_id' => 2,
-                    'committee_id' => $i - 3
+                    'committee_id' => $i
                 ]);
 
-//                $text = $this->readerService->parseText(\Storage::path($basePath . $paperPath));
-//                if (!$text) {
-//                    \Log::error('cannot read file ' . $paperPath);
-//                    return true;
-//                }
-//
-//
-//                \Storage::put($basePath . $paperPath . '.keywords', implode("\n", $this->extractorService->extract($text, $paper->language)));
+
 
 
                 $paper->revisions()->save(new PaperRevision([
-                    'name' => "Test diploma",
+                    'name' => "Diploma thesis",
                     'filepath' => $basePath . $paperPath
                 ]));
             });

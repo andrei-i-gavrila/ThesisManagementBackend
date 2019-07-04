@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\Roles;
+use App\Models\Committee;
 use App\Models\ProfessorDetails;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -49,27 +50,38 @@ class ProfessorImporter implements ShouldQueue
             "sabina",
             "ilazar",
 
-            "hfpop",
-            "dan",
-            "rgaceanu",
-
-            "avescan",
-            "rlupsa",
-            "arthur",
-
-            "craciunf",
-            "lupea",
-            "forest",
-
-            "vniculescu",
-            "vancea",
-            "mihoct",
         ]);
+        //        $allowedMails = collect([
+        //            "hfpop",
+        //            "dan",
+        //            "rgaceanu",
+        //
+        //            "avescan",
+        //            "rlupsa",
+        //            "arthur",
+        //
+        //            "craciunf",
+        //            "lupea",
+        //            "forest",
+        //
+        //            "vniculescu",
+        //            "vancea",
+        //            "mihoct",
+        //        ]);
 
 
         $allowedMails->each(function ($mail) {
             $prof = User::query()->firstOrCreate(['email' => $mail . '@cs.ubbcluj.ro'])->assignRole(Roles::PROFESSOR);
             dispatch_now(new ProfessorDetailImporter($prof));
+        });
+
+        User::professor()->orderBy('id')->chunk(3, function ($profs) {
+            Committee::create([
+                'leader_id' => $profs[0]->id,
+                'member1_id' => $profs[1]->id,
+                'member2_id' => $profs[2]->id,
+                'exam_session_id' => 2,
+            ]);
         });
 
 

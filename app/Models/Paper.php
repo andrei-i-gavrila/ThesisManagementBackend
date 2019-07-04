@@ -45,6 +45,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PaperProfessorScore[] $scores
  * @property float|null $written_exam_grade
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereWrittenExamGrade($value)
+ * @property-read mixed $keyed_averages
  */
 class Paper extends Model
 {
