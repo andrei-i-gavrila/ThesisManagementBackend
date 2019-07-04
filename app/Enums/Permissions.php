@@ -21,7 +21,10 @@ interface Permissions
 
     const MANAGE_GRADING_SCHEMES = "Manage grading schemes";
     const MANAGE_COMMITTEES = "Manage committees";
+    const UPLOAD_WRITTEN_EXAM_GRADES = "Upload grades";
+
 
     const GRADE = "Grade";
+    const GENERATE_DOCUMENTS = "Generate documents";
 
 }

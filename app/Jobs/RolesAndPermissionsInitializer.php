@@ -22,7 +22,8 @@ class RolesAndPermissionsInitializer implements ShouldQueue
             Permissions::MANAGE_PROFESSORS,
             Permissions::MANAGE_SESSIONS,
             Permissions::MANAGE_GRADING_SCHEMES,
-            Permissions::MANAGE_COMMITTEES
+            Permissions::MANAGE_COMMITTEES,
+            Permissions::UPLOAD_WRITTEN_EXAM_GRADES
         ],
         Roles::PROFESSOR => [
             Permissions::MANAGE_KEYWORDS,
@@ -40,7 +41,7 @@ class RolesAndPermissionsInitializer implements ShouldQueue
             Permissions::SEE_COMMITTEES
         ],
         Roles::SECRETARY => [
-
+            Permissions::GENERATE_DOCUMENTS
         ]
     ];
 

@@ -29,10 +29,17 @@ Route::middleware(["auth"])->group(function () {
         Route::post("/{examSession}/committee", "CommitteeController@create");
         Route::get("/{examSession}/committee", "CommitteeController@get");
         Route::post("/{examSession}/randomOrder", "ExamSessionController@randomAssignment");
+        Route::post("/{examSession}/smartOrder", "ExamSessionController@smartAssignment");
         Route::post("/{examSession}/lexicalOrder", "ExamSessionController@lexicalOrderAssignment");
         Route::post("/{examSession}/calculateScores", "ExamSessionController@calculateScores");
+        Route::get("/{examSession}/getScore", "ExamSessionController@getScoreOfDistribution");
     });
 
+
+    Route::prefix("writtenGrades")->group(function() {
+       Route::post("{examSession}", "WrittenGradeUploadController@upload");
+       Route::get("{examSession}", "WrittenGradeUploadController@getAll");
+    });
 
     Route::prefix("gradingCategory/{gradingCategory}")->group(function () {
         Route::delete("", "GradingCategoryController@deleteCategory");

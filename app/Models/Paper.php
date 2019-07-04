@@ -44,10 +44,13 @@ use Illuminate\Support\Carbon;
  * @mixin \Eloquent
  * @property string|null $language
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereLanguage($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PaperProfessorScore[] $scores
+ * @property float|null $written_exam_grade
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Paper whereWrittenExamGrade($value)
  */
 class Paper extends Model
 {
-    protected $fillable = ['name', 'student_id', 'link', 'exam_session_id', 'committee_id', 'language'];
+    protected $fillable = ['name', 'student_id', 'link', 'exam_session_id', 'committee_id', 'language', 'written_exam_grade'];
 
 
     public function student(): BelongsTo
@@ -71,9 +74,14 @@ class Paper extends Model
         return $this->hasMany(PaperRevision::class)->latest();
     }
 
+    public function scores(): HasMany
+    {
+        return $this->hasMany(PaperProfessorScore::class);
+    }
+
     public function finalRevision(): HasOne
     {
-        return $this->hasOne(PaperRevision::class)->latest()->limit(1);
+        return $this->hasOne(PaperRevision::class)->latest();
     }
 
     public function committee(): BelongsTo

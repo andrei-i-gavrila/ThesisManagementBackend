@@ -18,6 +18,10 @@ class CreatePapersTable extends Migration
             $table->string("name")->nullable();
             $table->string('link')->nullable();
             $table->string('language')->nullable();
+
+            $table->float('written_exam_grade')->nullable();
+
+
             $table->bigInteger('student_id');
             $table->bigInteger('exam_session_id');
             $table->bigInteger('committee_id')->nullable();

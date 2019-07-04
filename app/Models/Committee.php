@@ -41,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Committee whereSecretaryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Committee whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read mixed $all_member_ids
  */
 class Committee extends Model
 {
@@ -97,6 +98,11 @@ class Committee extends Model
                 'leader_id' => $professor->id
             ]);
         });
+    }
+
+    public function getAllMemberIdsAttribute()
+    {
+        return collect([$this->leader_id, $this->member1_id, $this->member2_id]);
     }
 
 }

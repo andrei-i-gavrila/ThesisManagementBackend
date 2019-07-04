@@ -61,26 +61,34 @@ class CommitteeController extends Controller
         if ($committee->leader_id != $ids['leader_id']) {
             if ($committee->leader_id)
                 $committee->leader->removeRole($evalRole);
-            $newOnes['leader_id']->assignRole($evalRole);
+            if (isset($newOnes['leader_id'])) {
+                $newOnes['leader_id']->assignRole($evalRole);
+            }
         }
 
         if ($committee->member1_id != $ids['member1_id']) {
             if ($committee->member1_id)
                 $committee->member1->removeRole($evalRole);
-            $newOnes['member1_id']->assignRole($evalRole);
+            if (isset($newOnes['member1_id'])) {
+                $newOnes['member1_id']->assignRole($evalRole);
+            }
         }
 
         if ($committee->member2_id != $ids['member2_id']) {
             if ($committee->member2_id)
                 $committee->member2->removeRole($evalRole);
-            $newOnes['member2_id']->assignRole($evalRole);
+            if (isset($newOnes['member2_id'])) {
+                $newOnes['member2_id']->assignRole($evalRole);
+            }
         }
 
         $secretaryRole = Role::findByName(Roles::SECRETARY);
         if ($committee->secretary_id != $ids['secretary_id']) {
             if ($committee->secretary_id)
                 $committee->secretary->removeRole($secretaryRole);
-            $newOnes['secretary_id']->assignRole($secretaryRole);
+            if (isset($newOnes['secretary_id'])) {
+                $newOnes['secretary_id']->assignRole($secretaryRole);
+            }
         }
 
         $committee->update($ids);

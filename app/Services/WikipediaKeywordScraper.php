@@ -31,6 +31,10 @@ class WikipediaKeywordScraper
 
     public function getTexts($query, $language = 'en')
     {
+        if (empty($query)) {
+            \Log::info('wtf ');
+            return collect();
+        }
         $title = $this->getPageTitle($query, $language);
 
         if ($title) {
@@ -63,7 +67,6 @@ class WikipediaKeywordScraper
         $contents = Cache::rememberForever($opensearchUrl, function () use ($opensearchUrl) {
             return $this->client->get($opensearchUrl)->getBody()->getContents();
         });
-
         return json_decode($contents)[1][0] ?? null;
     }
 

@@ -58,7 +58,7 @@ class User extends Authenticatable
     use UserStudent;
 
     protected $guard_name = 'api';
-    protected $fillable = ['email', 'name', 'activated', 'image_url'];
+    protected $fillable = ['email', 'name', 'activated', 'image_url', 'password'];
     protected $hidden = ['password'];
 
     public function getNameAttribute($name)

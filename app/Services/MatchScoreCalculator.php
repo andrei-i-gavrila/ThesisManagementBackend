@@ -34,6 +34,8 @@ class MatchScoreCalculator
 
     public function calculate(ExamSession $examSession)
     {
+        ini_set('max_execution_time', 10000);
+
         $tfidfs = ['ro' => new TFIDF(), 'en' => new TFIDF()];
 
 
@@ -41,6 +43,7 @@ class MatchScoreCalculator
 
 
         $tfProfessors = $committees->mapWithKeys(function (User $user) use ($tfidfs) {
+            \Log::info($user->email . ' prof done');
             return [$user->id => [
                 'ro' => $this->processProfessor($user, $tfidfs, 'ro'),
                 'en' => $this->processProfessor($user, $tfidfs, 'en')
@@ -52,6 +55,8 @@ class MatchScoreCalculator
         $paperScores = $papers->mapWithKeys(function (Paper $paper) use ($tfidfs) {
             $freqs = $this->loadKeywordsFromTxtFile($paper->finalRevision);
             $tfidfs[$paper->language]->indexDocument($freqs);
+            \Log::info($paper->id . ' paper done');
+
             return [$paper->id => ['scores' => $freqs, 'lang' => $paper->language]];
         });
 
@@ -80,6 +85,7 @@ class MatchScoreCalculator
                     return $this->cosineSimilarity($scores, $paperScores[$paper->id]);
                 })->sum();
 
+                \Log::info('scored ' . $paper->id . ' x ' . $profId);
                 PaperProfessorScore::updateOrCreate(['paper_id' => $paper->id, 'professor_id' => $profId], ['value' => $matchScore]);
             });
         });
@@ -129,7 +135,9 @@ class MatchScoreCalculator
 
     private function loadStudents(ExamSession $examSession): Collection
     {
-        return $examSession->papers->load('finalRevision');
+        return $examSession->papers->load('finalRevision')->filter(function(Paper $paper) {
+            return $paper->finalRevision != null;
+        });
     }
 
     private function loadKeywordsFromTxtFile(PaperRevision $paperRevision)

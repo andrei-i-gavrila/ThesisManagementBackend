@@ -12,6 +12,7 @@ use TextAnalysis\Filters\LowerCaseFilter;
 use TextAnalysis\Filters\PossessiveNounFilter;
 use TextAnalysis\Filters\StopWordsFilter;
 use TextAnalysis\Filters\TrimFilter;
+use TextAnalysis\Stemmers\PorterStemmer;
 use TextAnalysis\Stemmers\SnowballStemmer;
 use TextAnalysis\Tokenizers\GeneralTokenizer;
 
@@ -75,7 +76,7 @@ class KeywordExtractorService
         foreach ($this->getFilters($language) as $filter) {
             $document->applyTransformation($filter);
         }
-        $document->applyStemmer($this->getStemmer($language));
+//        $document->applyStemmer($this->getStemmer($language));
         return $document;
     }
 

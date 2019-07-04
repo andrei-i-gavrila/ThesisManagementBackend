@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\Roles;
 use App\Models\ProfessorDetails;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -32,23 +33,42 @@ class ProfessorImporter implements ShouldQueue
     public function handle()
     {
         $allowedMails = collect([
-            "hfpop@cs.ubbcluj.ro",
-            "dan@cs.ubbcluj.ro",
-            "rgaceanu@cs.ubbcluj.ro",
-            "avescan@cs.ubbcluj.ro",
-            "rlupsa@cs.ubbcluj.ro",
-            "arthur@cs.ubbcluj.ro",
-            "craciunf@cs.ubbcluj.ro",
-            "lupea@cs.ubbcluj.ro",
-            "forest@cs.ubbcluj.ro",
-            "vniculescu@cs.ubbcluj.ro",
-            "vancea@cs.ubbcluj.ro",
-            "mihoct@cs.ubbcluj.ro",
+            "grigo",
+            "camelia",
+            "radu.dragos",
+
+            "gabis",
+            "mihai-suciu",
+            "dana",
+
+            "lauras",
+            "sanda",
+            "cretu",
+
+            "istvanc",
+            "sabina",
+            "ilazar",
+
+            "hfpop",
+            "dan",
+            "rgaceanu",
+
+            "avescan",
+            "rlupsa",
+            "arthur",
+
+            "craciunf",
+            "lupea",
+            "forest",
+
+            "vniculescu",
+            "vancea",
+            "mihoct",
         ]);
 
 
         $allowedMails->each(function ($mail) {
-            $prof = User::firstOrCreate(['email' => $mail]);
+            $prof = User::query()->firstOrCreate(['email' => $mail . '@cs.ubbcluj.ro'])->assignRole(Roles::PROFESSOR);
             dispatch_now(new ProfessorDetailImporter($prof));
         });
 
